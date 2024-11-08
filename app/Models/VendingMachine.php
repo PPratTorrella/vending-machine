@@ -2,23 +2,30 @@
 
 namespace App\Models;
 
-use App\States\Interfaces\VendingMachineState;
+use App\Services\MoneyManager;
+use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
+use App\States\Interfaces\VendingMachineState;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VendingMachine
 {
     use HasFactory;
 
+    public HasMoneyState $hasMoneyState;
+    public IdleState $idleState;
     public VendingMachineState $state;
     public $inventory; // @todo make some class
+    public MoneyManager $moneyManager;
 
-    // @todo main logic or service
 
     public function __construct()
     {
         $this->inventory = [];
-        $this->state = new IdleState();
+        $this->idleState = new IdleState($this);
+        $this->hasMoneyState = new HasMoneyState($this);
+        $this->state = $this->idleState;
+        $this->moneyManager = new MoneyManager();
     }
 
     public function setState($state)
@@ -26,7 +33,7 @@ class VendingMachine
         $this->state = $state;
     }
 
-    // @todo for all these entry points for the commands we delegate to state which is nice, but check if not too much duplication if too similar logic
+    // @todo much logic duplication? But at least wont grow in conditions infinitly so maybe ok
     public function insertCoin($value)
     {
         $this->state->insertCoin($value);
@@ -45,6 +52,11 @@ class VendingMachine
     public function service()
     {
         return $this->state->service('what needs to pass, some action commands?');
+    }
+
+    public function getInsertedCoins()
+    {
+        return $this->moneyManager->getInsertedCoins();
     }
 
 }

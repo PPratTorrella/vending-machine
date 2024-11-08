@@ -2,24 +2,26 @@
 
 namespace App\States\Concrete;
 
+use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
 
 class HasMoneyState implements VendingMachineState
 {
-    private $machine;
+    private VendingMachine $machine;
 
     public function __construct($machine)
     {
         $this->machine = $machine;
     }
 
-    public function insertCoin($coinValue)
+    public function insertCoin($coin)
     {
+        $this->machine->moneyManager->insertCoin($coin);
     }
 
     public function returnCoins()
     {
-        return [];
+        return $this->machine->moneyManager->returnCoins();
     }
 
     public function selectItem($itemCode)
