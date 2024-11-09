@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class MoneyManager
+class UserMoneyManager
 {
     public array $insertedCoins = [];
 
@@ -21,5 +21,10 @@ class MoneyManager
     public function getInsertedCoins()
     {
         return $this->insertedCoins;
+    }
+
+    public function getTotal()
+    {
+        return array_sum($this->insertedCoins);
     }
 }

@@ -17,20 +17,22 @@ class IdleState implements VendingMachineState
 
     public function insertCoin($coin)
     {
-        $this->machine->moneyManager->insertCoin($coin);
+        $this->machine->userMoneyManager->insertCoin($coin);
         $this->machine->setState($this->machine->hasMoneyState);
     }
 
     public function returnCoins()
     {
-        return $this->machine->moneyManager->returnCoins();
+        return $this->machine->userMoneyManager->returnCoins();
     }
 
     public function selectItem($itemCode)
     {
+        throw new \Exception("Please insert coins first.");
     }
 
-    public function service($serviceCommand)
+    public function service($action, $parameters = [])
     {
+        return $this->machine->service($action, $parameters);
     }
 }

@@ -11,10 +11,15 @@ class vendingMachineTest extends TestCase
     public function test_vending_machine_gets_item_ok()
     {
         $vendingMachine = new VendingMachine();
+
         $vendingMachine->insertCoin(1.00);
         $vendingMachine->insertCoin(0.25);
-        $item = $vendingMachine->selectItem('Water');
-        $this->assertEquals('Water', $item); // @todo class for items? inside a item manager class? Inventory
+
+        $coins = $vendingMachine->getInsertedCoins();
+        $this->assertEquals([1, 0.25], $coins);
+
+        $return = $vendingMachine->selectItem(50); // @todo init with service some water to code 50
+        $this->assertEquals('water', $return['item']->name); // @todo class for items? inside a item manager class? Inventory
 //        $change = $vendingMachine->returnCoins(); // @todo returns automatically together with Item?
     }
 
@@ -26,7 +31,7 @@ class vendingMachineTest extends TestCase
         $coins = $vendingMachine->getInsertedCoins();
         $this->assertContains(1, $coins);
 
-        $vendingMachine->insertCoin(0.25); // assert: changed states but still same machine instance?
+        $vendingMachine->insertCoin(0.25);
         $coins = $vendingMachine->getInsertedCoins();
         $this->assertContains(0.25, $coins);
 
@@ -39,5 +44,15 @@ class vendingMachineTest extends TestCase
         }
 
         $this->assertEquals(1.25, array_sum($coins));
+
+        $askReturnAGain = $vendingMachine->returnCoins();
+        $this->assertEmpty($askReturnAGain);
+    }
+
+    public function test_vending_machine_idle_not_returns_money_ok()
+    {
+        $vendingMachine = new VendingMachine();
+        $askReturnAGain = $vendingMachine->returnCoins();
+        $this->assertEmpty($askReturnAGain);
     }
 }

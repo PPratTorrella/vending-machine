@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Services\MoneyManager;
+use App\Services\Inventory;
+use App\Services\UserMoneyManager;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
@@ -15,17 +16,17 @@ class VendingMachine
     public HasMoneyState $hasMoneyState;
     public IdleState $idleState;
     public VendingMachineState $state;
-    public $inventory; // @todo make some class
-    public MoneyManager $moneyManager;
+    public Inventory $inventory;
+    public UserMoneyManager $userMoneyManager;
 
 
     public function __construct()
     {
-        $this->inventory = [];
+        $this->inventory = new Inventory();
         $this->idleState = new IdleState($this);
         $this->hasMoneyState = new HasMoneyState($this);
         $this->state = $this->idleState;
-        $this->moneyManager = new MoneyManager();
+        $this->userMoneyManager = new UserMoneyManager();
     }
 
     public function setState($state)
@@ -49,14 +50,14 @@ class VendingMachine
         return $this->state->selectItem($itemCode);
     }
 
-    public function service()
+    public function service($action, $parameters = [])
     {
-        return $this->state->service('what needs to pass, some action commands?');
+        return $this->state->service('xxxxx');
     }
 
     public function getInsertedCoins()
     {
-        return $this->moneyManager->getInsertedCoins();
+        return $this->userMoneyManager->getInsertedCoins();
     }
 
 }

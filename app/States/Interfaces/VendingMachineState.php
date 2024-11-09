@@ -10,5 +10,5 @@ interface VendingMachineState
 
     public function selectItem($itemCode);
 
-    public function service($serviceCommand); //@todo what needs to go in exactly?
+    public function service($action, $parameters = []);
 }
