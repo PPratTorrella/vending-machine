@@ -9,6 +9,7 @@ class IdleState implements VendingMachineState
 {
 
     const DISPLAY_MESSAGE = 'Please insert coins.';
+    const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting item.";
     private VendingMachine $machine;
 
     public function __construct($machine)
@@ -29,7 +30,7 @@ class IdleState implements VendingMachineState
 
     public function selectItem($itemCode)
     {
-        throw new \Exception("Please insert coins first.");
+        throw new \Exception(self::SELECTED_ITEM_MESSAGE);
     }
 
     public function service($action, $parameters = [])

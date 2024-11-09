@@ -67,6 +67,12 @@ class vendingMachineTest extends TestCase
     {
         $vendingMachine = new VendingMachine();
 
+        $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
+        $this->assertEquals(IdleState::DISPLAY_MESSAGE, $vendingMachine->displayMessage);
+
+        $vendingMachine->selectItem(50); // water
+        $this->assertEquals(IdleState::SELECTED_ITEM_MESSAGE, $vendingMachine->displayMessage);
+
         $vendingMachine->insertCoin(10);
         $vendingMachine->insertCoin(25);
 
