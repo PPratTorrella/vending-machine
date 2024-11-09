@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+    app:
+        image: php:8.2-fpm
+        container_name: laravel_app
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - .:/var/www/html
+        networks:
+            - laravel
+
+    nginx:
+        image: nginx:stable-alpine
+        container_name: laravel_nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - app
+        networks:
+            - laravel
+
+networks:
+    laravel:
