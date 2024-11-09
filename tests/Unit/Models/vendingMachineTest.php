@@ -12,15 +12,19 @@ class vendingMachineTest extends TestCase
     {
         $vendingMachine = new VendingMachine();
 
-        $vendingMachine->insertCoin(1.00);
-        $vendingMachine->insertCoin(0.25);
+        $vendingMachine->insertCoin(100);
+        $vendingMachine->insertCoin(25);
 
         $coins = $vendingMachine->getInsertedCoins();
-        $this->assertEquals([1, 0.25], $coins);
+        $this->assertEquals([100, 25], $coins);
 
         $return = $vendingMachine->selectItem(50); // @todo init with service some water to code 50
-        $this->assertEquals('water', $return['item']->name); // @todo class for items? inside a item manager class? Inventory
-//        $change = $vendingMachine->returnCoins(); // @todo returns automatically together with Item?
+        $this->assertEquals('Water', $return['item']->name); // @todo class for items? inside a item manager class? Inventory
+
+        $this->assertEquals([25, 25, 10], $return['change'], 'Should return optimal combination for 60 cents');
+
+        $askReturnAGain = $vendingMachine->returnCoins();
+        $this->assertEmpty($askReturnAGain);
     }
 
     public function test_vending_machine_returns_money_ok()

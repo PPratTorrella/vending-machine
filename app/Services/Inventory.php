@@ -20,16 +20,16 @@ class Inventory
     private function initializeInventory()
     {
         $this->items = [
-            50 => ['item' => new Item('Water', 0.65), 'count' => 5],
-            55 => ['item' => new Item('Juice', 1.00), 'count' => 5],
-            60 => ['item' => new Item('Soda', 1.50), 'count' => 5],
+            50 => ['item' => new Item('Water', 65), 'count' => 5],
+            55 => ['item' => new Item('Juice', 100), 'count' => 5],
+            60 => ['item' => new Item('Soda', 150), 'count' => 5],
         ];
 
         $this->coins = [
-            1.00 => 10,
-            0.25 => 10,
-            0.10 => 10,
-            0.05 => 10,
+            100 => 10,
+            25 => 10,
+            10 => 10,
+            5 => 10,
         ];
     }
 
@@ -54,7 +54,7 @@ class Inventory
     public function addCoins($coins)
     {
         foreach ($coins as $coin) {
-            $this->coins[$coin->value]++;
+            $this->coins[$coin]++;
         }
     }
 

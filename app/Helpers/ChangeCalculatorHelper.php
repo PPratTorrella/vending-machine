@@ -9,15 +9,13 @@ class ChangeCalculatorHelper
     /**
      * Calculate the optimal change combination for a given amount
      *
-     * @param float $amount Amount to make change for in full euros
+     * @param float $amount Amount to make change for in cents
      * @param array $availableCoins Associative array of coin values in cents and their counts
      * @return array|null Array of coin values to return as change, or null if exact change cannot be made
      * @throws InvalidArgumentException If input parameters are invalid
      */
     public static function calculateOptimalChange(float $amount, array $availableCoins): ?array
     {
-        $amount = $amount * 100; // convert to cents to match coin values;
-
         self::validate($amount, $availableCoins);
 
         $workingCoins = $availableCoins;

@@ -22,7 +22,7 @@ class VendingMachine
 
     public function __construct()
     {
-        $this->inventory = new Inventory();
+        $this->inventory = app(Inventory::class);
         $this->idleState = new IdleState($this);
         $this->hasMoneyState = new HasMoneyState($this);
         $this->state = $this->idleState;
@@ -34,7 +34,6 @@ class VendingMachine
         $this->state = $state;
     }
 
-    // @todo much logic duplication? But at least wont grow in conditions infinitly so maybe ok
     public function insertCoin($value)
     {
         $this->state->insertCoin($value);
@@ -58,6 +57,11 @@ class VendingMachine
     public function getInsertedCoins()
     {
         return $this->userMoneyManager->getInsertedCoins();
+    }
+
+    public function reset()
+    {
+        $this->userMoneyManager->reset();
     }
 
 }

@@ -13,4 +13,9 @@ class Item
         $this->name = $name;
         $this->price = $price;
     }
+
+    public function getPrice()
+    {
+        return $this->price;
+    }
 }

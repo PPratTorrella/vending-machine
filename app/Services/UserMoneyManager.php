@@ -27,4 +27,9 @@ class UserMoneyManager
     {
         return array_sum($this->insertedCoins);
     }
+
+    public function reset()
+    {
+        $this->insertedCoins = [];
+    }
 }

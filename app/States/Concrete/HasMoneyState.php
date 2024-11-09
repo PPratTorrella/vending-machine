@@ -39,7 +39,7 @@ class HasMoneyState implements VendingMachineState
             throw new Exception("Insufficient funds. Please insert more coins.");
         }
 
-        $changeAmount = $totalInserted - $item->price;
+        $changeAmount = $totalInserted - $item->getPrice();
         $changeCoins = $this->machine->inventory->getChange($changeAmount);
 
         if ($changeCoins === null) {
@@ -47,9 +47,9 @@ class HasMoneyState implements VendingMachineState
         }
 
         // Dispense item and change
-        $this->machine->inventory->decrementItem($item->code);
-        $this->machine->inventory->addCoins($this->machine->transaction->insertedCoins);
-        $this->machine->transaction->reset();
+        $this->machine->inventory->decrementItem($itemCode);
+        $this->machine->inventory->addCoins($this->machine->userMoneyManager->insertedCoins);
+        $this->machine->userMoneyManager->reset();
         $this->machine->setState($this->machine->idleState);
 
         return [
