@@ -2,23 +2,31 @@
 
 namespace App\Services;
 
+use App\Helpers\ChangeCalculatorHelper;
 use App\Models\Item;
 
 class Inventory
 {
     public $items = [];
     public $coins = [];
+    private ChangeCalculatorHelper $changeCalculator;
 
-    public function __construct()
+    public function __construct(ChangeCalculatorHelper $changeCalculator)
+    {
+        $this->changeCalculator = $changeCalculator;
+        $this->initializeInventory();
+    }
+
+    private function initializeInventory()
     {
         $this->items = [
-            50 => ['item' => new Item('Water', 0.65), 'count' => 5],  // @todo code and count array? or make class?, move this init to service action
+            50 => ['item' => new Item('Water', 0.65), 'count' => 5],
             55 => ['item' => new Item('Juice', 1.00), 'count' => 5],
-            60  => ['item' => new Item('Soda', 1.50), 'count' => 5],
+            60 => ['item' => new Item('Soda', 1.50), 'count' => 5],
         ];
 
         $this->coins = [
-            1.00 => 10, // @todo make value class for coin?
+            1.00 => 10,
             0.25 => 10,
             0.10 => 10,
             0.05 => 10,
@@ -52,32 +60,18 @@ class Inventory
 
     public function getChange($amount)
     {
-        $change = [];
-        $remaining = $amount;
+        $result = $this->changeCalculator->calculateOptimalChange($amount, $this->coins);
 
-        $coinsConsidered = array_keys($this->coins);
-        // unset($coinsForChange[1.00]); //@todo we do not give back 1 euro coins? read test descripotion again
-
-        foreach ($coinsConsidered as $coinValue) {
-
-            $shouldAndCanReturnMoreChange = $remaining >= $coinValue && $this->coins[$coinValue] > 0;
-            while ($shouldAndCanReturnMoreChange) {
-//                @todo we need a stronger algorithm for this maybe extract? what is gives back too much, what if is greedy hillclimbing stuck and should instead move on to smaller coins!!!
-//                $change[] = $coinValue;
-//                $remaining -= $coinValue;
-//                $this->coins[$coinValue]--;
-            }
-        }
-
-        if ($remaining == 0) {
-            return $change;
-        } else {
-            // @todo not enough change, eturn coins back to inventory ?
-//            foreach ($change as $coin) {
-//                $this->coins[$coin->value]++;
-//            }
+        if ($result === null) {
             return null;
         }
+
+        // update inventory only if we found a valid solution
+        foreach ($result as $coinValue) {
+            $this->coins[$coinValue]--;
+        }
+
+        return $result;
     }
 
     public function setItemCount($code, $count)
