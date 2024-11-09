@@ -41,7 +41,9 @@ class VendingMachine
 
     public function returnCoins()
     {
-        return $this->state->returnCoins();
+        $coins = $this->state->returnCoins();
+        $this->state = $this->idleState;
+        return $coins;
     }
 
     public function selectItem($itemCode)
