@@ -8,6 +8,7 @@ use App\States\Interfaces\VendingMachineState;
 class IdleState implements VendingMachineState
 {
 
+    const DISPLAY_MESSAGE = 'Please insert coins.';
     private VendingMachine $machine;
 
     public function __construct($machine)

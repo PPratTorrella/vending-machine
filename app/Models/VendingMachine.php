@@ -7,6 +7,7 @@ use App\Services\UserMoneyManager;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VendingMachine
@@ -18,6 +19,7 @@ class VendingMachine
     public VendingMachineState $state;
     public Inventory $inventory;
     public UserMoneyManager $userMoneyManager;
+    public string $displayMessage;
 
 
     public function __construct()
@@ -26,6 +28,7 @@ class VendingMachine
         $this->idleState = new IdleState($this);
         $this->hasMoneyState = new HasMoneyState($this);
         $this->state = $this->idleState;
+        $this->displayMessage = IdleState::DISPLAY_MESSAGE;
         $this->userMoneyManager = new UserMoneyManager();
     }
 
@@ -48,7 +51,17 @@ class VendingMachine
 
     public function selectItem($itemCode)
     {
-        return $this->state->selectItem($itemCode);
+        $return = [
+            'item'  => null,
+            'change' => [],
+        ];
+
+        try {
+            return $this->state->selectItem($itemCode);
+        } catch (Exception $e) {
+            $this->displayMessage = $e->getMessage();
+            return $return;
+        }
     }
 
     public function service($action, $parameters = [])

@@ -9,6 +9,7 @@ use Exception;
 
 class HasMoneyState implements VendingMachineState
 {
+    const INSUFFICIENT_FUNDS_MESSAGE = "Insufficient funds. Please insert more coins.";
     private VendingMachine $machine;
 
     public function __construct($machine)
@@ -36,7 +37,7 @@ class HasMoneyState implements VendingMachineState
             throw new Exception("Item out of stock.");
         }
         if ($totalInserted < $item->price) {
-            throw new Exception("Insufficient funds. Please insert more coins.");
+            throw new Exception(self::INSUFFICIENT_FUNDS_MESSAGE);
         }
 
         $changeAmount = $totalInserted - $item->getPrice();
