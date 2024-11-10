@@ -2,14 +2,22 @@
 
 namespace Models;
 
+use App\Helpers\ChangeCalculatorHelper;
 use App\Models\Item;
 use App\Models\VendingMachine;
+use App\Services\Inventory;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
+use Exception;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class vendingMachineTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Mockery::close();
+    }
 
     public static function getDefaultInventory(): array
     {
@@ -150,5 +158,34 @@ class vendingMachineTest extends TestCase
         $this->assertEquals(10, $inventoryAfter['items'][50]['count']);
         $this->assertEquals(65, $inventoryAfter['items'][50]['item']->price);
         $this->assertEquals('Water', $inventoryAfter['items'][50]['item']->name);
+    }
+
+    public function test_vending_machine_transaction_rollback_on_failure()
+    {
+        $vendingMachine = new VendingMachine();
+
+        // mock inventory to fail on adding coins
+        $inventoryMock = Mockery::mock(Inventory::class)->makePartial();
+        $changeCalculator = app(ChangeCalculatorHelper::class);
+        $inventoryMock->__construct($changeCalculator);
+        $inventoryMock->items = [50 => ['item' => new Item('Water', 50), 'count' => 10]];
+        $inventoryMock->coins = [10 => 20, 25 => 30, 100 => 5];
+        $inventoryMock->shouldReceive('addCoins')->andThrow(new Exception('Simulated failure on adding coins'));
+        $vendingMachine->inventory = $inventoryMock;
+
+        $vendingMachine->insertCoin(100);
+        $vendingMachine->insertCoin(25);
+        $this->assertInstanceOf(HasMoneyState::class, $vendingMachine->state);
+
+        $inventoryBefore = $vendingMachine->getInventory();
+        $originalUserCoins = $vendingMachine->userMoneyManager->getInsertedCoins();
+
+        $vendingMachine->selectItem(50);
+
+        $inventoryAfter = $vendingMachine->getInventory();
+        $this->assertEquals($inventoryBefore['items'][50]['count'], $inventoryAfter['items'][50]['count'], 'Item count should be rolled back');
+        $this->assertEquals($inventoryBefore['coins'], $inventoryAfter['coins'], 'Coins in inventory should be rolled back');
+        $this->assertEquals($originalUserCoins, $vendingMachine->userMoneyManager->getInsertedCoins(), 'User coins should be rolled back');
+        $this->assertEquals(HasMoneyState::ERROR_MESSAGE, $vendingMachine->displayMessage);
     }
 }

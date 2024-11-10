@@ -10,6 +10,8 @@ class HasMoneyState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
     const INSUFFICIENT_FUNDS_MESSAGE = "Insufficient funds. Please insert more coins.";
+    const ERROR_MESSAGE = 'ERROR occured. Transaction cancelled, try again.';
+
     private VendingMachine $machine;
 
     public function __construct($machine)
@@ -29,6 +31,7 @@ class HasMoneyState implements VendingMachineState
     }
 
     /**
+     * // @todo should def know way less, interact only with machine without knowing specifics, likewise elsewhere!
      * @throws Exception
      */
     public function selectItem($itemCode): array
@@ -37,7 +40,8 @@ class HasMoneyState implements VendingMachineState
 
         $totalInserted = $this->machine->userMoneyManager->getTotal();
 
-        $outOfStock = !$this->machine->inventory->items[$itemCode]['count']; // @todo should def know way less, interact only with machine without knowing specifics, likewise elsewhere!
+        $outOfStock = !$this->machine->inventory->items[$itemCode]['count'];
+
         if ($outOfStock) {
             throw new Exception("Item out of stock.");
         }
@@ -53,12 +57,22 @@ class HasMoneyState implements VendingMachineState
             throw new Exception("Cannot dispense change. Transaction cancelled.");
         }
 
-        // @todo refactor to keep inventory consistent when errors occur, maybe a rollback or some simulation?
-        $this->machine->inventory->decrementItem($itemCode);
-        $this->machine->inventory->addCoins($this->machine->userMoneyManager->insertedCoins);
-        $this->machine->inventory->removeCoins($changeCoins);
+        $originalItemCount = $this->machine->inventory->items[$itemCode]['count'];
+        $originalInventoryCoins = $this->machine->inventory->coins;
+        $originalUserCoins = $this->machine->userMoneyManager->insertedCoins;
 
-        $this->machine->userMoneyManager->reset();
+        try {
+            $this->machine->inventory->decrementItem($itemCode);
+            $this->machine->inventory->addCoins($this->machine->userMoneyManager->insertedCoins);
+            $this->machine->inventory->removeCoins($changeCoins);
+            $this->machine->userMoneyManager->reset();
+
+        } catch (Exception $e) {
+            $this->machine->inventory->items[$itemCode]['count'] = $originalItemCount;
+            $this->machine->inventory->coins = $originalInventoryCoins;
+            $this->machine->userMoneyManager->insertedCoins = $originalUserCoins;
+            throw new Exception(self::ERROR_MESSAGE); // @todo use custom exception classes for controlled messages
+        }
 
         $this->machine->setState($this->machine->idleState);
 

@@ -9,7 +9,6 @@ use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Log;
 
 class VendingMachine
 {
@@ -60,8 +59,8 @@ class VendingMachine
         try {
             return $this->state->selectItem($itemCode);
         } catch (Exception $e) {
-            // @todo maybe inject logger or re throw and handle in some upper layer
-            $this->displayMessage = $e->getMessage();
+//            var_dump($e->getMessage()); // @todo maybe inject logger or re throw and handle in some upper layer
+            $this->displayMessage = $e->getMessage(); // @todo make exception classes to not confuse controlled display message with unexpected errors
             return $return;
         }
     }
