@@ -14,7 +14,15 @@ class Item
         $this->price = $price;
     }
 
-    public function getPrice()
+    public function __toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'price' => $this->price
+        ];
+    }
+
+    public function getPrice(): float
     {
         return $this->price;
     }

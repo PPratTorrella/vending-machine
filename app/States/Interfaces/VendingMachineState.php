@@ -9,6 +9,4 @@ interface VendingMachineState
     public function returnCoins();
 
     public function selectItem($itemCode);
-
-    public function service($action, $parameters = []);
 }

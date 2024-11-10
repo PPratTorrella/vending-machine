@@ -4,10 +4,10 @@ namespace App\States\Concrete;
 
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
+use Exception;
 
 class IdleState implements VendingMachineState
 {
-
     const DISPLAY_MESSAGE = 'Please insert coins.';
     const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting item.";
     private VendingMachine $machine;
@@ -15,6 +15,7 @@ class IdleState implements VendingMachineState
     public function __construct($machine)
     {
         $this->machine = $machine;
+        $this->machine->displayMessage = self::DISPLAY_MESSAGE;
     }
 
     public function insertCoin($coin)
@@ -30,11 +31,6 @@ class IdleState implements VendingMachineState
 
     public function selectItem($itemCode)
     {
-        throw new \Exception(self::SELECTED_ITEM_MESSAGE);
-    }
-
-    public function service($action, $parameters = [])
-    {
-        return $this->machine->service($action, $parameters);
+        throw new Exception(self::SELECTED_ITEM_MESSAGE);
     }
 }

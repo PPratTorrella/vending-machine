@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use App\Models\Item;
 use App\Models\VendingMachine;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
@@ -10,9 +11,25 @@ use PHPUnit\Framework\TestCase;
 class vendingMachineTest extends TestCase
 {
 
+    public static function getDefaultInventory(): array
+    {
+        return [
+            'items' => [
+                50 => ['name' => 'Water', 'count' => 10, 'price' => 65],
+            ],
+            'coins' => [
+                10 => 20,
+                25 => 30,
+            ]
+        ];
+    }
+
     public function test_vending_machine_gets_item_ok()
     {
         $vendingMachine = new VendingMachine();
+
+        $inventory = $this->getDefaultInventory();
+        $vendingMachine->service($inventory['items'], $inventory['coins']);
 
         $vendingMachine->insertCoin(100);
         $this->assertInstanceOf(HasMoneyState::class, $vendingMachine->state);
@@ -21,7 +38,9 @@ class vendingMachineTest extends TestCase
         $coins = $vendingMachine->getInsertedCoins();
         $this->assertEquals([100, 25], $coins);
 
-        $return = $vendingMachine->selectItem(50); // @todo init with service some water to code 50 (and/or any other code)
+        $inventoryBefore = $vendingMachine->getInventory();
+
+        $return = $vendingMachine->selectItem(50);
         $this->assertEquals('Water', $return['item']->name);
         $this->assertEquals([25, 25, 10], $return['change'], 'Should return optimal combination for 60 cents');
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
@@ -29,11 +48,20 @@ class vendingMachineTest extends TestCase
         $askReturnAGain = $vendingMachine->returnCoins();
         $this->assertEmpty($askReturnAGain);
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
+
+        $inventoryAfter = $vendingMachine->getInventory();
+        $this->assertEquals(9, $inventoryAfter['items'][50]['count']);
+
+        $this->assertEquals([10 => 20, 25 => 30], $inventoryBefore['coins']);
+        $this->assertEquals([10 => 19, 25 => 29, 100 => 1], $inventoryAfter['coins'], 'Should have added 100 + 25 coins and removed 25 + 10 coins');
     }
 
     public function test_vending_machine_returns_money_ok()
     {
         $vendingMachine = new VendingMachine();
+
+        $inventory = $this->getDefaultInventory();
+        $vendingMachine->service($inventory['items'], $inventory['coins']);
 
         $vendingMachine->insertCoin(100);
         $coins = $vendingMachine->getInsertedCoins();
@@ -67,6 +95,9 @@ class vendingMachineTest extends TestCase
     {
         $vendingMachine = new VendingMachine();
 
+        $inventory = $this->getDefaultInventory();
+        $vendingMachine->service($inventory['items'], $inventory['coins']);
+
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
         $this->assertEquals(IdleState::DISPLAY_MESSAGE, $vendingMachine->displayMessage);
 
@@ -85,5 +116,39 @@ class vendingMachineTest extends TestCase
         $coins = $vendingMachine->returnCoins();
         $this->assertEquals(35, array_sum($coins));
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
+    }
+
+    public function test_vending_machine_servicing_ok()
+    {
+        $vendingMachine = new VendingMachine();
+
+        $inventory = $this->getDefaultInventory();
+        $vendingMachine->service($inventory['items'], $inventory['coins']);
+
+        $items = [45 => ['name' => 'Cola', 'count' => 5, 'price' => 95]];
+        $coins = [10 => 10];
+        $vendingMachine->service($items, $coins);
+
+        /** for the IDE
+         * @var array{
+         *     items: array<int, array{ item: Item, count: int }>,
+         *     coins: array<float, int>
+         * } $inventoryAfter
+         */
+        $inventoryAfter = $vendingMachine->getInventory();
+
+        $this->assertEquals([10 => 10, 25 => 30], $inventoryAfter['coins'], 'Should have 10 coins of 10 and 30 coins of 25 exactly');
+
+        $this->assertEquals([50, 45], array_keys($inventoryAfter['items']), 'Should have items in code 50 and 45 and none else');
+
+        $this->assertInstanceOf(Item::class, $inventoryAfter['items'][45]['item']);
+        $this->assertEquals(5, $inventoryAfter['items'][45]['count']);
+        $this->assertEquals(95, $inventoryAfter['items'][45]['item']->price);
+        $this->assertEquals('Cola', $inventoryAfter['items'][45]['item']->name);
+
+        $this->assertInstanceOf(Item::class, $inventoryAfter['items'][50]['item']);
+        $this->assertEquals(10, $inventoryAfter['items'][50]['count']);
+        $this->assertEquals(65, $inventoryAfter['items'][50]['item']->price);
+        $this->assertEquals('Water', $inventoryAfter['items'][50]['item']->name);
     }
 }

@@ -9,6 +9,7 @@ use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Log;
 
 class VendingMachine
 {
@@ -59,14 +60,15 @@ class VendingMachine
         try {
             return $this->state->selectItem($itemCode);
         } catch (Exception $e) {
+            // @todo maybe inject logger or re throw and handle in some upper layer
             $this->displayMessage = $e->getMessage();
             return $return;
         }
     }
 
-    public function service($action, $parameters = [])
+    public function service($items = [], $coins = [])
     {
-        return $this->state->service('xxxxx');
+        $this->inventory->updateInventory($items, $coins);
     }
 
     public function getInsertedCoins()
@@ -77,6 +79,15 @@ class VendingMachine
     public function reset()
     {
         $this->userMoneyManager->reset();
+    }
+
+    // @todo could make some class (DTO)
+    public function getInventory(): array
+    {
+        return [
+            'items' => $this->inventory->items,
+            'coins' => $this->inventory->coins,
+        ];
     }
 
 }

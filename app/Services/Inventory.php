@@ -14,30 +14,13 @@ class Inventory
     public function __construct(ChangeCalculatorHelper $changeCalculator)
     {
         $this->changeCalculator = $changeCalculator;
-        $this->initializeInventory();
-    }
-
-    private function initializeInventory()
-    {
-        $this->items = [
-            50 => ['item' => new Item('Water', 65), 'count' => 5],
-            55 => ['item' => new Item('Juice', 100), 'count' => 5],
-            60 => ['item' => new Item('Soda', 150), 'count' => 5],
-        ];
-
-        $this->coins = [
-            100 => 10,
-            25 => 10,
-            10 => 10,
-            5 => 10,
-        ];
     }
 
     /**
      * @param int $code
      * @return Item|null
      */
-    public function showItem($code)
+    public function showItem($code): ?Item
     {
         return $this->items[$code]['item'] ?? null;
     }
@@ -54,35 +37,57 @@ class Inventory
     public function addCoins($coins)
     {
         foreach ($coins as $coin) {
+            if (!isset($this->coins[$coin])) {
+                $this->coins[$coin] = 0;
+            }
             $this->coins[$coin]++;
         }
     }
 
-    public function getChange($amount)
+    public function removeCoins($coins)
     {
-        $result = $this->changeCalculator->calculateOptimalChange($amount, $this->coins);
+        foreach ($coins as $coin) {
+            if (!isset($this->coins[$coin])) {
+                $this->coins[$coin] = 0;
+            }
 
-        if ($result === null) {
-            return null;
-        }
+            $this->coins[$coin]--;
 
-        // update inventory only if we found a valid solution
-        foreach ($result as $coinValue) {
-            $this->coins[$coinValue]--;
-        }
-
-        return $result;
-    }
-
-    public function setItemCount($code, $count)
-    {
-        if (isset($this->items[$code])) {
-            $this->items[$code]['count'] = $count;
+            if ($this->coins[$coin] < 0) {
+                //@todo this is problematic
+                $this->coins[$coin] = 0;
+            }
         }
     }
 
-    public function setCoinCount($value, $count)
+    /**
+     * Doesn't persist changes, only calculates them
+     * @param $amount
+     * @return array|null
+     */
+    public function calculateChange($amount): ?array
     {
-        $this->coins[$value] = $count;
+        return $this->changeCalculator->calculateOptimalChange($amount, $this->coins);
+    }
+
+    /**
+     * Overrides inventory items and coins with the provided values
+     * If an item code or coin is not provided but is currently available, it will be kept as is
+     *
+     * @param array $items format: [code => ['name' => 'ItemName', 'count' => X, 'price' => Y]]
+     * @param array $coins
+     */
+    public function updateInventory(array $items = [], array $coins = [])
+    {
+        foreach ($items as $code => $data) {
+            $this->items[$code] = [
+                'item' => new Item($data['name'], $data['price']),
+                'count' => $data['count'],
+            ];
+        }
+        foreach ($coins as $value => $count) {
+            //@todo validate that $value is a valid coin here and elsewhere
+            $this->coins[$value] = $count;
+        }
     }
 }
