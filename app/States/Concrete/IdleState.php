@@ -2,6 +2,7 @@
 
 namespace App\States\Concrete;
 
+use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
@@ -19,20 +20,22 @@ class IdleState implements VendingMachineState
         $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
     }
 
-    public function insertCoin($coin)
+    public function insertCoin($coin): void
     {
-        $this->machine->userMoneyManager->insertCoin($coin);
+        $command = new InsertCoinCommand($this->machine, $coin);
+        $command->execute();
+
         $this->machine->setHasMoneyState();
     }
 
-    public function returnCoins()
+    public function returnCoins(): array
     {
-        // for extra safety could still call command, but in our test we trust states
+        // for extra safety could still call command, but in this project we'll trust states
         $this->machine->setDisplayMessage(self::RETURN_COINS_MESSAGE);
         return [];
     }
 
-    public function selectItem($itemCode)
+    public function selectItem($itemCode): array
     {
         $this->machine->setDisplayMessage(self::SELECTED_ITEM_MESSAGE);
 

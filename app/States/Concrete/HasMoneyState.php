@@ -2,12 +2,13 @@
 
 namespace App\States\Concrete;
 
+use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Commands\Concrete\VendingMachine\ReturnCoinsCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
 
-class HasMoneyState implements VendingMachineState //@todo move all states to parent Vendingmachine folder as its specifically for this interface?
+class HasMoneyState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
 
@@ -21,7 +22,8 @@ class HasMoneyState implements VendingMachineState //@todo move all states to pa
 
     public function insertCoin($coin): void
     {
-        $this->machine->userMoneyManager->insertCoin($coin);
+        $command = new InsertCoinCommand($this->machine, $coin);
+        $command->execute();
     }
 
     public function returnCoins(): array

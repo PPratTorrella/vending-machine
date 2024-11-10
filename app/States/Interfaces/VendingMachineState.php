@@ -4,9 +4,9 @@ namespace App\States\Interfaces;
 
 interface VendingMachineState
 {
-    public function insertCoin($coin);
+    public function insertCoin($coin): void;
 
-    public function returnCoins();
+    public function returnCoins(): array;
 
-    public function selectItem($itemCode);
+    public function selectItem($itemCode): array;
 }
