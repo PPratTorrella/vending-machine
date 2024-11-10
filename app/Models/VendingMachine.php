@@ -30,10 +30,7 @@ class VendingMachine
     public function __construct()
     {
         $this->inventory = app(Inventory::class);
-        $this->idleState = new IdleState($this);
-        $this->hasMoneyState = new HasMoneyState($this);
-        $this->state = $this->idleState;
-        $this->displayMessage = IdleState::DISPLAY_MESSAGE;
+        $this->setIdleState();
         $this->userMoneyManager = new UserMoneyManager();
     }
 
@@ -99,12 +96,12 @@ class VendingMachine
 
     public function setIdleState()
     {
-        $this->state = $this->idleState;
+        $this->state = new IdleState($this); // @todo see what to do with these
     }
 
     public function setHasMoneyState()
     {
-        $this->state = $this->hasMoneyState;
+        $this->state = new HasMoneyState($this);
     }
 
 }

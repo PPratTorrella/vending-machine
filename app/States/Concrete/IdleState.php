@@ -10,23 +10,26 @@ class IdleState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Please insert coins.';
     const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting an item.";
+    const RETURN_COINS_MESSAGE = "No coins to return.";
     private VendingMachine $machine;
 
     public function __construct($machine)
     {
         $this->machine = $machine;
-        $this->machine->displayMessage = self::DISPLAY_MESSAGE;
+        $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
     }
 
     public function insertCoin($coin)
-    { //@todo al these in all states to commands
+    {
         $this->machine->userMoneyManager->insertCoin($coin);
         $this->machine->setHasMoneyState();
     }
 
     public function returnCoins()
     {
-        return $this->machine->userMoneyManager->returnCoins();
+        // for extra safety could still call command, but in our test we trust states
+        $this->machine->setDisplayMessage(self::RETURN_COINS_MESSAGE);
+        return [];
     }
 
     public function selectItem($itemCode)

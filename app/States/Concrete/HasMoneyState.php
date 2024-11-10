@@ -2,6 +2,7 @@
 
 namespace App\States\Concrete;
 
+use App\Commands\Concrete\VendingMachine\ReturnCoinsCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
@@ -15,7 +16,7 @@ class HasMoneyState implements VendingMachineState //@todo move all states to pa
     public function __construct($machine)
     {
         $this->machine = $machine;
-        $this->machine->displayMessage = self::DISPLAY_MESSAGE;
+        $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
     }
 
     public function insertCoin($coin): void
@@ -25,7 +26,8 @@ class HasMoneyState implements VendingMachineState //@todo move all states to pa
 
     public function returnCoins(): array
     {
-        $result = $this->machine->userMoneyManager->returnCoins();
+        $command = new ReturnCoinsCommand($this->machine);
+        $result = $command->execute();
 
         $this->machine->setIdleState();
 
