@@ -2,14 +2,14 @@
 
 namespace App\States\Concrete;
 
+use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
-use Exception;
 
 class IdleState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Please insert coins.';
-    const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting item.";
+    const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting an item.";
     private VendingMachine $machine;
 
     public function __construct($machine)
@@ -19,9 +19,9 @@ class IdleState implements VendingMachineState
     }
 
     public function insertCoin($coin)
-    {
+    { //@todo al these in all states to commands
         $this->machine->userMoneyManager->insertCoin($coin);
-        $this->machine->setState($this->machine->hasMoneyState);
+        $this->machine->setHasMoneyState();
     }
 
     public function returnCoins()
@@ -31,6 +31,9 @@ class IdleState implements VendingMachineState
 
     public function selectItem($itemCode)
     {
-        throw new Exception(self::SELECTED_ITEM_MESSAGE);
+        $this->machine->setDisplayMessage(self::SELECTED_ITEM_MESSAGE);
+
+        $command = new SelectItemCommand($this->machine, $itemCode, allowed: false);
+        return $command->execute();
     }
 }

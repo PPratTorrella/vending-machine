@@ -14,6 +14,11 @@ class VendingMachine
 {
     use HasFactory;
 
+    const ERROR_MESSAGE_SELECT_ITEM = 'ERROR occured. Transaction cancelled, try again.';
+    const ERROR_MESSAGE_INSUFFICIENT_FUNDS = "Insufficient funds. Please insert more coins.";
+    const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = "Not enough change. Transaction cancelled.";
+    const ERROR_MESSAGE_OUT_OF_STOCK = "Item out of stock.";
+
     public HasMoneyState $hasMoneyState;
     public IdleState $idleState;
     public VendingMachineState $state;
@@ -32,37 +37,19 @@ class VendingMachine
         $this->userMoneyManager = new UserMoneyManager();
     }
 
-    public function setState($state)
-    {
-        $this->state = $state;
-    }
-
     public function insertCoin($value)
     {
-        $this->state->insertCoin($value);
+        return $this->state->insertCoin($value);
     }
 
     public function returnCoins()
     {
-        $coins = $this->state->returnCoins();
-        $this->state = $this->idleState;
-        return $coins;
+        return $this->state->returnCoins();
     }
 
     public function selectItem($itemCode)
     {
-        $return = [
-            'item'  => null,
-            'change' => [],
-        ];
-
-        try {
-            return $this->state->selectItem($itemCode);
-        } catch (Exception $e) {
-//            var_dump($e->getMessage()); // @todo maybe inject logger or re throw and handle in some upper layer
-            $this->displayMessage = $e->getMessage(); // @todo make exception classes to not confuse controlled display message with unexpected errors
-            return $return;
-        }
+        return $this->state->selectItem($itemCode);
     }
 
     public function service($items = [], $coins = [])
@@ -75,11 +62,6 @@ class VendingMachine
         return $this->userMoneyManager->getInsertedCoins();
     }
 
-    public function reset()
-    {
-        $this->userMoneyManager->reset();
-    }
-
     // @todo could make some class (DTO)
     public function getInventory(): array
     {
@@ -87,6 +69,42 @@ class VendingMachine
             'items' => $this->inventory->items,
             'coins' => $this->inventory->coins,
         ];
+    }
+
+    public function hasStock($itemCode): bool
+    {
+        return $this->inventory->items[$itemCode]['count'] > 0;
+    }
+
+    public function hasFundsForItem($itemCode): bool
+    {
+        $item = $this->inventory->showItem($itemCode);
+        $totalInserted = $this->userMoneyManager->getTotal();
+        return $totalInserted >= $item->price;
+    }
+
+    public function hasChange($itemCode): bool
+    {
+        $item = $this->inventory->showItem($itemCode);
+        $totalInserted = $this->userMoneyManager->getTotal();
+        $changeAmount = $totalInserted - $item->price;
+        $changeCoins = $this->inventory->calculateChange($changeAmount);
+        return !empty($changeCoins);
+    }
+
+    public function setDisplayMessage(string $message)
+    {
+        $this->displayMessage = $message;
+    }
+
+    public function setIdleState()
+    {
+        $this->state = $this->idleState;
+    }
+
+    public function setHasMoneyState()
+    {
+        $this->state = $this->hasMoneyState;
     }
 
 }

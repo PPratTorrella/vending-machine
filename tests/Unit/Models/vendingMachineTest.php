@@ -119,7 +119,7 @@ class vendingMachineTest extends TestCase
         $this->assertEmpty($return['item']);
         $this->assertEmpty($return['change']);
         $this->assertInstanceOf(HasMoneyState::class, $vendingMachine->state);
-        $this->assertEquals(HasMoneyState::INSUFFICIENT_FUNDS_MESSAGE, $vendingMachine->displayMessage);
+        $this->assertEquals(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, $vendingMachine->displayMessage);
 
         $coins = $vendingMachine->returnCoins();
         $this->assertEquals(35, array_sum($coins));
@@ -186,6 +186,6 @@ class vendingMachineTest extends TestCase
         $this->assertEquals($inventoryBefore['items'][50]['count'], $inventoryAfter['items'][50]['count'], 'Item count should be rolled back');
         $this->assertEquals($inventoryBefore['coins'], $inventoryAfter['coins'], 'Coins in inventory should be rolled back');
         $this->assertEquals($originalUserCoins, $vendingMachine->userMoneyManager->getInsertedCoins(), 'User coins should be rolled back');
-        $this->assertEquals(HasMoneyState::ERROR_MESSAGE, $vendingMachine->displayMessage);
+        $this->assertEquals(VendingMachine::ERROR_MESSAGE_SELECT_ITEM, $vendingMachine->displayMessage);
     }
 }
