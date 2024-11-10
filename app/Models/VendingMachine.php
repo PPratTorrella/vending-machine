@@ -36,7 +36,7 @@ class VendingMachine
 
     public function insertCoin($value)
     {
-        return $this->state->insertCoin($value);
+        $this->state->insertCoin($value);
     }
 
     public function returnCoins()
@@ -51,7 +51,7 @@ class VendingMachine
 
     public function service($items = [], $coins = [])
     {
-        $this->inventory->updateInventory($items, $coins);
+        $this->state->service($items, $coins);
     }
 
     public function getInsertedCoins()

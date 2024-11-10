@@ -11,8 +11,9 @@ use App\States\Interfaces\VendingMachineState;
 class HasMoneyState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
+    const SERVICE_MESSAGE = "Please wait for current transaction to finish.";
 
-    private VendingMachine $machine; // @todo depend on interface
+    private VendingMachine $machine;
 
     public function __construct($machine)
     {
@@ -46,5 +47,12 @@ class HasMoneyState implements VendingMachineState
         }
 
         return $result;
+    }
+
+    public function service($items = [], $coins = []): void
+    {
+        // we could allow this, but as an example of State control we block.
+        // Also, we don't care now about service attempt param data getting lost but depending on usage of api this might be an issue
+        $this->machine->setDisplayMessage(self::SERVICE_MESSAGE);
     }
 }
