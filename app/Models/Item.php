@@ -26,4 +26,9 @@ class Item
     {
         return $this->price;
     }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }

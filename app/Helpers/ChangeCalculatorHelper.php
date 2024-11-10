@@ -14,7 +14,7 @@ class ChangeCalculatorHelper
      * @return array|null Array of coin values to return as change, or null if exact change cannot be made
      * @throws InvalidArgumentException If input parameters are invalid
      */
-    public static function calculateOptimalChange(float $amount, array $availableCoins): ?array
+    public function calculateOptimalChange(float $amount, array $availableCoins): ?array
     {
         self::validate($amount, $availableCoins);
 
