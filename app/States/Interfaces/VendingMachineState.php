@@ -11,4 +11,6 @@ interface VendingMachineState
     public function selectItem($itemCode): array;
 
     public function service(array $items, array $coins): void;
+
+    public function getName(): string;
 }

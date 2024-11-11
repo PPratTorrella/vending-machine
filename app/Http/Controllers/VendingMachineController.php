@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
-use App\States\Concrete\HasMoneyState;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -16,19 +17,17 @@ class VendingMachineController extends Controller
         if (session()->has('vendingMachine')) {
             $vendingMachineData = session('vendingMachine');
             $this->vendingMachine = new VendingMachine();
-
             $this->vendingMachine->inventory->updateInventory(
                 $vendingMachineData['inventory']['items'],
                 $vendingMachineData['inventory']['coins']
             );
 
             $this->vendingMachine->userMoneyManager->insertedCoins = $vendingMachineData['insertedCoins'];
-
             $this->vendingMachine->displayMessage = $vendingMachineData['displayMessage'];
 
-            if ($vendingMachineData['state'] === 'hasMoney') {
-                $this->vendingMachine->setHasMoneyState();
-            } else {
+            try {
+                $this->vendingMachine->state = VendingMachineStateFactory::create($vendingMachineData['state'], $this->vendingMachine);
+            } catch (Exception $e) {
                 $this->vendingMachine->setIdleState();
             }
         } else {
@@ -91,13 +90,13 @@ class VendingMachineController extends Controller
         return redirect()->route('vendingMachine.show');
     }
 
-    private function storeSessionData()
+    private function storeSessionData(): void
     {
         $vendingMachineData = [
             'inventory' => $this->vendingMachine->getInventory(),
             'insertedCoins' => $this->vendingMachine->userMoneyManager->insertedCoins,
             'displayMessage' => $this->vendingMachine->displayMessage,
-            'state' => $this->vendingMachine->state instanceof HasMoneyState ? 'hasMoney' : 'idle',
+            'state' => $this->vendingMachine->state->getName(),
         ];
 
         session(['vendingMachine' => $vendingMachineData]);

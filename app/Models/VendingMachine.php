@@ -10,17 +10,15 @@ use App\States\Interfaces\VendingMachineState;
 
 class VendingMachine
 {
-
     const ERROR_MESSAGE_SELECT_ITEM = 'ERROR occured. Transaction cancelled, try again.';
-    const ERROR_MESSAGE_INSUFFICIENT_FUNDS = "Insufficient funds. Please insert more coins.";
-    const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = "Not enough change. Transaction cancelled.";
-    const ERROR_MESSAGE_OUT_OF_STOCK = "Item out of stock.";
+    const ERROR_MESSAGE_INSUFFICIENT_FUNDS = 'Insufficient funds. Please insert more coins.';
+    const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = 'Not enough change. Transaction cancelled.';
+    const ERROR_MESSAGE_OUT_OF_STOCK = 'Item out of stock.';
 
     public VendingMachineState $state;
     public Inventory $inventory;
     public UserMoneyManager $userMoneyManager;
     public string $displayMessage;
-
 
     public function __construct()
     {

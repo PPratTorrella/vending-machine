@@ -49,6 +49,7 @@
         }
     </style>
 </head>
+
 <body>
 <div class="vending-machine">
     <h1 class="text-center">Vending Machine</h1>

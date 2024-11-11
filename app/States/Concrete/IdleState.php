@@ -11,8 +11,9 @@ use App\States\Interfaces\VendingMachineState;
 class IdleState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Please insert coins.';
-    const SELECTED_ITEM_MESSAGE = "Please insert coins before selecting an item.";
-    const RETURN_COINS_MESSAGE = "No coins to return.";
+    const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';
+    const RETURN_COINS_MESSAGE = 'No coins to return.';
+    const STATE_NAME = 'idleState';
 
     private VendingMachine $machine;
 
@@ -49,5 +50,10 @@ class IdleState implements VendingMachineState
     {
         $command = new ServiceCommand($this->machine, $items, $coins);
         $command->execute();
+    }
+
+    public function getName(): string
+    {
+        return self::STATE_NAME;
     }
 }
