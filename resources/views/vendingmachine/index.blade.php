@@ -5,18 +5,26 @@
     <title>Vending Machine</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
+
     <style>
         .vending-machine {
             max-width: 900px;
             margin: 50px auto;
         }
         .machine-display {
-            background-color: #444;
-            color: #fff;
+            background-color: #000;
+            color: #0F0; /* Digital green color */
             padding: 15px;
             margin-bottom: 20px;
             text-align: center;
             border-radius: 5px;
+            border: 2px solid #0F0;
+        }
+        .machine-display h2 {
+            margin: 0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2em;
         }
         .product-icon {
             font-size: 30px;
@@ -45,9 +53,9 @@
 <div class="vending-machine">
     <h1 class="text-center">Vending Machine</h1>
     <div class="machine-display">
-        <p>{{ $displayMessage }}</p>
+        <h2>{{ $displayMessage }}</h2>
         @if(session('lastItem'))
-            <p>You received: {{ session('lastItem')->name }}</p>
+            <p>You received: {{ session('lastItem')->getName() }}</p>
             @if(!empty(session('changeCoins')))
                 <p>Your change: {{ implode(', ', session('changeCoins')) }} cents</p>
             @endif
@@ -106,8 +114,8 @@
                         <div class="card product-card">
                             <div class="card-body">
                                 <div class="product-code">{{ $code }}</div>
-                                <h5 class="card-title">{{ $itemData['item']->name }}</h5>
-                                <p class="card-text"><strong>Price:</strong> {{ $itemData['item']->price }}¢</p>
+                                <h5 class="card-title">{{ $itemData['item']->getName() }}</h5>
+                                <p class="card-text"><strong>Price:</strong> {{ $itemData['item']->getPrice() }}¢</p>
                                 <p class="card-text"><strong>Stock:</strong> {{ $itemData['count'] }}</p>
                                 <i class="fas fa-wine-bottle product-icon"></i>
                             </div>
