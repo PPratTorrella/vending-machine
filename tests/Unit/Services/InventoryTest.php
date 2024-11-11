@@ -76,7 +76,7 @@ class InventoryTest extends TestCase
 
     public function testUpdateInventory()
     {
-        $this->inventory->updateInventory([4 => ['name' => 'Energy Drink', 'count' => 20, 'price' => 200]],[25 => 8, 50 => 3]);
+        $this->inventory->updateInventory([4 => ['name' => 'Energy Drink', 'count' => 20, 'price' => 200]], [25 => 8, 50 => 3]);
 
         $this->assertArrayHasKey(4, $this->inventory->items);
         $this->assertEquals('Energy Drink', $this->inventory->items[4]['item']->getName());

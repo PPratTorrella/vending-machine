@@ -11,8 +11,8 @@ use Exception;
 class VendingMachineStateFactory
 {
     protected static array $stateMap = [
-        'idle' => IdleState::class,
-        'hasMoney' => HasMoneyState::class,
+        'idleState' => IdleState::class,
+        'hasMoneyState' => HasMoneyState::class,
     ];
 
     public static function create(string $stateName, VendingMachine $vendingMachine): VendingMachineState

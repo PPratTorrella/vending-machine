@@ -11,6 +11,7 @@ use App\States\Interfaces\VendingMachineState;
 class HasMoneyState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
+    const TOTAL_SUM_PREFIX = 'Total inserted: ';
     const SERVICE_MESSAGE = 'Please wait for current transaction to finish.';
     const STATE_NAME = 'hasMoneyState';
 
@@ -19,13 +20,15 @@ class HasMoneyState implements VendingMachineState
     public function __construct($machine)
     {
         $this->machine = $machine;
-        $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
+        $this->setMessage();
     }
 
     public function insertCoin($coin): void
     {
         $command = new InsertCoinCommand($this->machine, $coin);
         $command->execute();
+
+        $this->setMessage();
     }
 
     public function returnCoins(): array
@@ -60,5 +63,13 @@ class HasMoneyState implements VendingMachineState
     public function getName(): string
     {
         return self::STATE_NAME;
+    }
+
+    private function setMessage()
+    {
+        $total = $this->machine->getInsertedCoinsTotal();
+        $totalFormatted = number_format($total / 100, 2);
+        $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . self::DISPLAY_MESSAGE;
+        $this->machine->setDisplayMessage($message);
     }
 }

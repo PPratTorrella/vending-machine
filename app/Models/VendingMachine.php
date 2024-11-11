@@ -52,6 +52,11 @@ class VendingMachine
         return $this->userMoneyManager->getInsertedCoins();
     }
 
+    public function getInsertedCoinsTotal()
+    {
+        return $this->userMoneyManager->getTotal();
+    }
+
     // @todo could make some class (DTO)
     public function getInventory(): array
     {
@@ -82,17 +87,22 @@ class VendingMachine
         return !empty($changeCoins);
     }
 
-    public function setDisplayMessage(string $message)
+    public function setDisplayMessage(string $message): void
     {
         $this->displayMessage = $message;
     }
 
-    public function setIdleState()
+    public function getDisplayMessage(): string
+    {
+        return $this->displayMessage;
+    }
+
+    public function setIdleState(): void
     {
         $this->state = new IdleState($this); // @todo see what to do with these
     }
 
-    public function setHasMoneyState()
+    public function setHasMoneyState(): void
     {
         $this->state = new HasMoneyState($this);
     }

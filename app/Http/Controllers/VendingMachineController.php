@@ -2,103 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Factories\VendingMachineStateFactory;
-use App\Models\VendingMachine;
+use App\Services\VendingMachineService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class VendingMachineController extends Controller
 {
-    private VendingMachine $vendingMachine;
+    private VendingMachineService $vendingMachineService;
 
-    public function __construct()
+    public function __construct(VendingMachineService $vendingMachineService)
     {
-        if (session()->has('vendingMachine')) {
-            $vendingMachineData = session('vendingMachine');
-            $this->vendingMachine = new VendingMachine();
-            $this->vendingMachine->inventory->updateInventory(
-                $vendingMachineData['inventory']['items'],
-                $vendingMachineData['inventory']['coins']
-            );
-
-            $this->vendingMachine->userMoneyManager->insertedCoins = $vendingMachineData['insertedCoins'];
-            $this->vendingMachine->displayMessage = $vendingMachineData['displayMessage'];
-
-            try {
-                $this->vendingMachine->state = VendingMachineStateFactory::create($vendingMachineData['state'], $this->vendingMachine);
-            } catch (Exception $e) {
-                $this->vendingMachine->setIdleState();
-            }
-        } else {
-            $this->vendingMachine = new VendingMachine();
-            $this->vendingMachine->inventory->updateInventory([
-                '55' => ['name' => 'Soda', 'price' => 150, 'count' => 10],
-                '60' => ['name' => 'Water', 'price' => 100, 'count' => 10],
-                '65' => ['name' => 'Juice', 'price' => 120, 'count' => 10],
-            ], [
-                100 => 10,
-                50 => 20,
-                25 => 30,
-                10 => 40,
-            ]);
-        }
+        $this->vendingMachineService = $vendingMachineService;
     }
 
     public function show()
     {
-        return view('vendingMachine.index', [
-            'inventory' => $this->vendingMachine->getInventory(),
-            'displayMessage' => $this->vendingMachine->displayMessage,
-            'insertedCoins' => $this->vendingMachine->userMoneyManager->getInsertedCoins(),
-            'totalInserted' => $this->vendingMachine->userMoneyManager->getTotal(),
-        ]);
+        $viewData = $this->vendingMachineService->getViewData();
+        return view('vendingMachine.index', $viewData);
     }
 
     public function insertCoin(Request $request)
     {
         $coin = (int)$request->input('coin');
-        $this->vendingMachine->insertCoin($coin);
-
-        $this->storeSessionData();
-
+        try {
+            $this->vendingMachineService->insertCoin($coin);
+        } catch (Exception $e) {
+            session()->flash('message', $e->getMessage());
+        }
         return redirect()->route('vendingMachine.show');
     }
 
     public function selectItem(Request $request)
     {
         $itemCode = $request->input('item_code');
-        $this->vendingMachine->selectItem($itemCode);
-
-        $this->storeSessionData();
-
+        try {
+            $result = $this->vendingMachineService->selectItem($itemCode);
+        } catch (Exception $e) {
+            session()->flash('message', $e->getMessage());
+        }
+        session()->flash('result', $result ?? []);
         return redirect()->route('vendingMachine.show');
     }
 
     public function service(Request $request)
     {
-        $itemsJson = $request->input('items');
-        $coinsJson = $request->input('coins');
-
-        $items = json_decode($itemsJson, true);
-        $coins = json_decode($coinsJson, true);
-
-        $this->vendingMachine->service($items ?? [], $coins ?? []);
-
-        $this->storeSessionData();
-
+        $items = json_decode($request->input('items'), true) ?? [];
+        $coins = json_decode($request->input('coins'), true) ?? [];
+        try {
+            $this->vendingMachineService->service($items, $coins);
+        } catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+        }
+        session()->flash('message', $errorMessage ?? 'Service completed.');
         return redirect()->route('vendingMachine.show');
-    }
-
-    private function storeSessionData(): void
-    {
-        $vendingMachineData = [
-            'inventory' => $this->vendingMachine->getInventory(),
-            'insertedCoins' => $this->vendingMachine->userMoneyManager->insertedCoins,
-            'displayMessage' => $this->vendingMachine->displayMessage,
-            'state' => $this->vendingMachine->state->getName(),
-        ];
-
-        session(['vendingMachine' => $vendingMachineData]);
     }
 }

@@ -21,10 +21,10 @@
             border-radius: 5px;
             border: 2px solid #0F0;
         }
-        .machine-display h2 {
+        .machine-display .digital {
             margin: 0;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 2em;
+            font-size: 1.5em;
         }
         .product-icon {
             font-size: 30px;
@@ -47,6 +47,13 @@
             display: inline-block;
             margin-bottom: 5px;
         }
+        .small-alert {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin: 10px auto;
+            max-width: 300px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 
@@ -54,14 +61,24 @@
 <div class="vending-machine">
     <h1 class="text-center">Vending Machine</h1>
     <div class="machine-display">
-        <h2>{{ $displayMessage }}</h2>
-        @if(session('lastItem'))
-            <p>You received: {{ session('lastItem')->getName() }}</p>
-            @if(!empty(session('changeCoins')))
-                <p>Your change: {{ implode(', ', session('changeCoins')) }} cents</p>
-            @endif
+        <h3 class="digital">{{ $displayMessage }}</h3>
+        @if (session('result'))
+            <button onclick="document.getElementById('success-sound').play()" class="btn btn-link" id="play-sound-btn">
+                <i class="fas fa-fist-raised"></i> punch machine
+            </button>
+            <div class="alert alert-success">
+                {{ json_encode(session('result')) }}
+            </div>
         @endif
     </div>
+
+    <audio id="success-sound" src="{{ asset('sounds/dispense_sound.mp3') }}" preload="auto"></audio>
+
+    @if (session('message'))
+        <div class="alert alert-info small-alert" id="flash-message">
+            {{ session('message') }}
+        </div>
+    @endif
     <div class="row">
 
         <div class="col-md-6">
@@ -72,7 +89,7 @@
                     <label for="coin" class="sr-only">Coin</label>
                     <select name="coin" id="coin" class="form-control" required>
                         <option value="" disabled selected>Select Coin</option>
-                        <option value="100">1 Dollar (100¢)</option>
+                        <option value="100">1 Dollar</option>
                         <option value="50">50¢</option>
                         <option value="25">25¢</option>
                         <option value="10">10¢</option>
@@ -80,7 +97,11 @@
                 </div>
                 <button type="submit" class="btn btn-primary mb-2 ml-2">Insert <i class="fas fa-coins"></i></button>
             </form>
-            <p>Inserted Coins: {{ implode(', ', $insertedCoins) }} (Total: {{ $totalInserted }}¢)</p>
+            <p>
+                Inserted Coins:
+                {{ implode(', ', array_map(fn($coin) => '€' . number_format($coin / 100, 2), $insertedCoins)) }}
+                (Total: €{{ number_format($totalInserted / 100, 2) }})
+            </p>
 
             <h2>Select Item</h2>
             <form action="{{ route('vendingMachine.selectItem') }}" method="POST" class="form-inline mb-3">
@@ -138,5 +159,17 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const resultAlert = document.getElementById('result-alert');
+        const successSound = document.getElementById('success-sound');
+
+        if (resultAlert) {
+            successSound.play();
+        }
+    });
+</script>
+
 </body>
 </html>
