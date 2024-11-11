@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VendingMachineController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/vending-machine', [VendingMachineController::class, 'show'])->name('vendingMachine.show');
+Route::post('/vending-machine/insert-coin', [VendingMachineController::class, 'insertCoin'])->name('vendingMachine.insertCoin');
+Route::post('/vending-machine/select-item', [VendingMachineController::class, 'selectItem'])->name('vendingMachine.selectItem');
+Route::post('/vending-machine/service', [VendingMachineController::class, 'service'])->name('vendingMachine.service');

@@ -33,7 +33,6 @@ class ItemTest extends TestCase
     public function testSettersAndGetters()
     {
         $item = new Item('Juice', 100);
-
         $this->assertEquals('Juice', $item->getName());
         $this->assertEquals(100, $item->getPrice());
     }

@@ -7,20 +7,15 @@ use App\Services\UserMoneyManager;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
-use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VendingMachine
 {
-    use HasFactory;
 
     const ERROR_MESSAGE_SELECT_ITEM = 'ERROR occured. Transaction cancelled, try again.';
     const ERROR_MESSAGE_INSUFFICIENT_FUNDS = "Insufficient funds. Please insert more coins.";
     const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = "Not enough change. Transaction cancelled.";
     const ERROR_MESSAGE_OUT_OF_STOCK = "Item out of stock.";
 
-    public HasMoneyState $hasMoneyState;
-    public IdleState $idleState;
     public VendingMachineState $state;
     public Inventory $inventory;
     public UserMoneyManager $userMoneyManager;
