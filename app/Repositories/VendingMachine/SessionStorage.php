@@ -1,20 +1,30 @@
 <?php
-
-namespace App\Dataproviders\VendingMachine;
+namespace App\Repositories\VendingMachine;
 
 use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
+use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use Exception;
+use Illuminate\Contracts\Session\Session;
 
-class DataProvider
+class SessionStorage implements StorageInterface
 {
+    protected Session $session;
+    protected VendingMachineStateFactory $stateFactory;
+
+    public function __construct(Session $session, VendingMachineStateFactory $stateFactory)
+    {
+        $this->session = $session;
+        $this->stateFactory = $stateFactory;
+    }
+
     public function getVendingMachine(): VendingMachine
     {
-        if (!session()->has('vendingMachine')) {
-            return $this->initializeDefaultInventory();
+        if (!$this->session->has('vendingMachine')) {
+            return $this->initDefault();
         }
 
-        $vendingMachineData = session('vendingMachine');
+        $vendingMachineData = $this->session->get('vendingMachine');
         $vendingMachine = new VendingMachine();
 
         $items = array_map(function ($itemData) {
@@ -26,11 +36,10 @@ class DataProvider
         }, $vendingMachineData['inventory']['items']);
         $coins = $vendingMachineData['inventory']['coins'];
         $vendingMachine->updateInventory($items, $coins);
-
         $vendingMachine->setInsertedCoins($vendingMachineData['insertedCoins']);
 
         try {
-            $state = VendingMachineStateFactory::create($vendingMachineData['state'], $vendingMachine);
+            $state = $this->stateFactory->create($vendingMachineData['state'], $vendingMachine);
             $vendingMachine->setState($state);
         } catch (Exception $e) {
             $vendingMachine->setIdleState();
@@ -50,10 +59,10 @@ class DataProvider
             'state' => $vendingMachine->state->getName(),
         ];
 
-        session(['vendingMachine' => $vendingMachineData]);
+        $this->session->put('vendingMachine', $vendingMachineData);
     }
 
-    private function initializeDefaultInventory(): VendingMachine
+    public function initDefault(): VendingMachine
     {
         $vendingMachine = new VendingMachine();
         $vendingMachine->inventory->updateInventory([

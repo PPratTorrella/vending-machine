@@ -21,6 +21,11 @@ class VendingMachineService
         $this->vendingMachine = $this->dataProvider->getVendingMachine();
     }
 
+    public function initDefault(): VendingMachine
+    {
+        return $this->dataProvider->initDefault();
+    }
+
     public function getViewData(): array
     {
         $this->refreshVendingMachine();
