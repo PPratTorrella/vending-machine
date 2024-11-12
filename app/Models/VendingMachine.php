@@ -14,6 +14,8 @@ class VendingMachine
     const ERROR_MESSAGE_INSUFFICIENT_FUNDS = 'Insufficient funds. Please insert more coins.';
     const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = 'Not enough change. Transaction cancelled.';
     const ERROR_MESSAGE_OUT_OF_STOCK = 'Item out of stock.';
+    const ERROR_MESSAGE_CODE_NOT_SET = 'Invalid code.';
+    const ERROR_MESSAGE_INVALID_COIN = 'Invalid coin.';
 
     public VendingMachineState $state;
     public Inventory $inventory;
@@ -69,6 +71,11 @@ class VendingMachine
     public function updateInventory($items, $coins): void
     {
         $this->inventory->updateInventory($items, $coins);
+    }
+
+    public function codeExists($itemCode): bool
+    {
+        return isset($this->inventory->items[$itemCode]);
     }
 
     public function hasStock($itemCode): bool

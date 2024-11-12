@@ -147,10 +147,6 @@ class ChangeCalculatorHelper
             throw new InvalidArgumentException("Amount cannot be negative");
         }
 
-        if (empty($availableCoins)) {
-            throw new InvalidArgumentException("Available coins array cannot be empty");
-        }
-
         foreach ($availableCoins as $value => $count) {
             if ($value <= 0) {
                 throw new InvalidArgumentException("Coin values must be positive");

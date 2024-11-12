@@ -2,49 +2,48 @@
 
 namespace App\Presenters;
 
+use App\Models\Item;
+
 class VendingMachinePresenter
 {
-    protected array $result;
-
-    public function __construct(array $result)
-    {
-        $this->result = $result;
-    }
+    protected Item $item;
+    private array $coins = [];
 
     public function getItem(): ?string
     {
-        if (isset($this->result['item'])) {
-            $itemName = $this->result['item']->getName();
-            $price = $this->formatPrice($this->result['item']->getPrice());
-            return "$itemName - $price";
+        if (!isset($this->item)) {
+            return null;
         }
-
-        return null;
+        $itemName = $this->item->getName();
+        $price = $this->formatPrice($this->item->getPrice());
+        return "$itemName - $price";
     }
 
-    public function getChange(): array
+    public function getCoins(): array
     {
-        if (!isset($this->result['change'])) {
+        if (empty($this->coins)) {
             return [];
         }
 
-        $coinCounts = array_count_values($this->result['change']);
+        $coinCounts = array_count_values($this->coins);
 
         return array_map(function ($coinValue, $count) {
             return "$count x " . $this->formatPrice($coinValue);
         }, array_keys($coinCounts), $coinCounts);
     }
 
-    public function toArray(): array
-    {
-        return [
-            'item' => $this->getItem(),
-            'change' => $this->getChange(),
-        ];
-    }
-
     public function formatPrice(int $cents): string
     {
         return '€' . number_format($cents / 100, 2);
+    }
+
+    public function setItem(Item $item)
+    {
+        $this->item = $item;
+    }
+
+    public function setCoins(array $coins)
+    {
+        $this->coins = $coins;
     }
 }

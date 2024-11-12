@@ -23,13 +23,17 @@ class SelectItemCommand implements Command
     {
         $result = [
             'item'  => null,
-            'change' => [],
+            'coins' => [],
         ];
 
         if (!$this->allowed) {
             return $result;
         }
 
+        if (!$this->machine->codeExists($this->itemCode)) {
+            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_CODE_NOT_SET;
+            return $result;
+        }
         if (!$this->machine->hasStock($this->itemCode)) {
             $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK;
             return $result;
@@ -67,7 +71,7 @@ class SelectItemCommand implements Command
         }
 
         $result['item'] = $item;
-        $result['change'] = $changeCoins;
+        $result['coins'] = $changeCoins;
 
         return $result;
     }

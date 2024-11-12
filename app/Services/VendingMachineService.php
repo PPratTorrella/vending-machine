@@ -61,4 +61,12 @@ class VendingMachineService
         $this->dataProvider->saveVendingMachine($this->vendingMachine);
         return $result;
     }
+
+    public function returnCoins(): array
+    {
+        $this->refreshVendingMachine();
+        $result = $this->vendingMachine->returnCoins();
+        $this->dataProvider->saveVendingMachine($this->vendingMachine);
+        return $result;
+    }
 }

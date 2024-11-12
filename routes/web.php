@@ -23,4 +23,5 @@ Route::middleware(['web'])->group(function () {
     Route::post('/vending-machine/insert-coin', [VendingMachineController::class, 'insertCoin'])->name('vendingMachine.insertCoin');
     Route::post('/vending-machine/select-item', [VendingMachineController::class, 'selectItem'])->name('vendingMachine.selectItem');
     Route::post('/vending-machine/service', [VendingMachineController::class, 'service'])->name('vendingMachine.service');
+    Route::get('/vending-machine/return-coins', [VendingMachineController::class, 'returnCoins'])->name('vendingMachine.returnCoins');
 });

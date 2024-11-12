@@ -20,5 +20,4 @@ class InsertCoinCommand implements Command
     {
         $this->machine->userMoneyManager->insertCoin($this->coin);
     }
-
 }

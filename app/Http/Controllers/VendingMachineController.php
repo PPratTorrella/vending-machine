@@ -18,10 +18,15 @@ class VendingMachineController extends Controller
         $this->vendingMachineService = $vendingMachineService;
     }
 
-    public function show()
+    public function show(VendingMachinePresenter $presenter)
     {
-        $result = session('result', []);
-        $presenter = new VendingMachinePresenter($result);
+        $dispensed = session('dispensed', []);
+        if (!empty($dispensed['item'])) {
+            $presenter->setItem($dispensed['item']);
+        }
+        if (!empty($dispensed['coins'])) {
+            $presenter->setCoins($dispensed['coins']);
+        }
         $viewData = $this->vendingMachineService->getViewData();
         $viewData['presenter'] = $presenter;
         return view('vendingMachine.index', $viewData);
@@ -38,6 +43,17 @@ class VendingMachineController extends Controller
         return redirect()->route('vendingMachine.show');
     }
 
+    public function returnCoins()
+    {
+        try {
+            $result = $this->vendingMachineService->returnCoins();
+        } catch (Exception $e) {
+            session()->flash('message', $e->getMessage());
+        }
+        session()->flash('dispensed', ['coins' => $result ?? []]);
+        return redirect()->route('vendingMachine.show');
+    }
+
     public function selectItem(Request $request)
     {
         $itemCode = $request->input('item_code');
@@ -46,7 +62,7 @@ class VendingMachineController extends Controller
         } catch (Exception $e) {
             session()->flash('message', $e->getMessage());
         }
-        session()->flash('result', $result ?? []);
+        session()->flash('dispensed', $result ?? []);
         return redirect()->route('vendingMachine.show');
     }
 
