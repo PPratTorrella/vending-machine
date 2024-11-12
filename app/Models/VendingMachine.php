@@ -42,9 +42,9 @@ class VendingMachine
         return $this->state->selectItem($itemCode);
     }
 
-    public function service($items = [], $coins = [])
+    public function service($items = [], $coins = []): bool
     {
-        $this->state->service($items, $coins);
+        return $this->state->service($items, $coins);
     }
 
     public function getInsertedCoins()
@@ -88,6 +88,9 @@ class VendingMachine
         $item = $this->inventory->showItem($itemCode);
         $totalInserted = $this->userMoneyManager->getTotal();
         $changeAmount = $totalInserted - $item->price;
+        if ($changeAmount == 0) {
+            return true;
+        }
         $changeCoins = $this->inventory->calculateChange($changeAmount);
         return !empty($changeCoins);
     }

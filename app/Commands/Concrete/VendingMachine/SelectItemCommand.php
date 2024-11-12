@@ -31,15 +31,15 @@ class SelectItemCommand implements Command
         }
 
         if (!$this->machine->hasStock($this->itemCode)) {
-            $this->machine->displayMessage = VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK;
+            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK;
             return $result;
         }
         if (!$this->machine->hasFundsForItem($this->itemCode)) {
-            $this->machine->displayMessage = VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS;
+            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS;
             return $result;
         }
         if (!$this->machine->hasChange($this->itemCode)) {
-            $this->machine->displayMessage = VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE;
+            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE;
             return $result;
         }
 

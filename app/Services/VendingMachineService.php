@@ -53,10 +53,11 @@ class VendingMachineService
         return $result;
     }
 
-    public function service(array $items, array $coins): void
+    public function service(array $items, array $coins): bool
     {
         $this->refreshVendingMachine();
-        $this->vendingMachine->service($items, $coins);
+        $result = $this->vendingMachine->service($items, $coins);
         $this->dataProvider->saveVendingMachine($this->vendingMachine);
+        return $result;
     }
 }

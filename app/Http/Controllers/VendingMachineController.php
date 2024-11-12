@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Presenters\VendingMachineResultPresenter;
 use App\Services\VendingMachineService;
 use Exception;
 use Illuminate\Http\Request;
@@ -83,9 +82,8 @@ class VendingMachineController extends Controller
         try {
             $this->vendingMachineService->service($items, $coins);
         } catch (Exception $e) {
-            $errorMessage = $e->getMessage();
+            session()->flash('message', $e->getMessage());
         }
-        session()->flash('message', $errorMessage ?? 'Service completed.');
         return redirect()->route('vendingMachine.show');
     }
 }

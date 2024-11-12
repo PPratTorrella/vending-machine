@@ -47,10 +47,11 @@ class IdleState implements VendingMachineState
         return $command->execute();
     }
 
-    public function service($items = [], $coins = []): void
+    public function service($items = [], $coins = []): bool
     {
         $command = new ServiceCommand($this->machine, $items, $coins);
         $command->execute();
+        return true;
     }
 
     public function getName(): string

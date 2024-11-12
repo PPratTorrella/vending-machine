@@ -13,7 +13,7 @@ class HasMoneyState implements VendingMachineState
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
     const TOTAL_SUM_PREFIX = 'Total inserted: ';
-    const SERVICE_MESSAGE = 'Please wait for current transaction to finish.';
+    const SERVICE_MESSAGE = 'Service not allowed. Please wait for current transaction to finish.';
     const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
 
     private VendingMachine $machine;
@@ -28,7 +28,6 @@ class HasMoneyState implements VendingMachineState
     {
         $command = new InsertCoinCommand($this->machine, $coin);
         $command->execute();
-
         $this->setMessage();
     }
 
@@ -36,9 +35,7 @@ class HasMoneyState implements VendingMachineState
     {
         $command = new ReturnCoinsCommand($this->machine);
         $result = $command->execute();
-
         $this->machine->setIdleState();
-
         return $result;
     }
 
@@ -46,19 +43,16 @@ class HasMoneyState implements VendingMachineState
     {
         $command = new SelectItemCommand($this->machine, $itemCode);
         $result = $command->execute();
-
-        if (empty($result['item'])) {
-            $this->setMessage('Item has no stock or you have insufficient funds.'); //@Todo give status code or smthing back from command to know what happened
-        } else {
+        if (!empty($result['item'])) {
             $this->machine->setIdleState();
         }
-
         return $result;
     }
 
-    public function service($items = [], $coins = []): void
+    public function service($items = [], $coins = []): bool
     {
         $this->machine->setDisplayMessage(self::SERVICE_MESSAGE);
+        return false;
     }
 
     public function getName(): string
