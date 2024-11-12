@@ -36,7 +36,10 @@ class VendingMachineController extends Controller
     {
         $coin = (int)$request->input('coin');
         try {
-            $this->vendingMachineService->insertCoin($coin);
+            $coins = $this->vendingMachineService->insertCoin($coin);
+            if (!empty($coins)) {
+                session()->flash('dispensed', ['coins' => $coins]);
+            }
         } catch (Exception $e) {
             session()->flash('message', $e->getMessage());
         }
@@ -46,11 +49,11 @@ class VendingMachineController extends Controller
     public function returnCoins()
     {
         try {
-            $result = $this->vendingMachineService->returnCoins();
+            $coins = $this->vendingMachineService->returnCoins();
         } catch (Exception $e) {
             session()->flash('message', $e->getMessage());
         }
-        session()->flash('dispensed', ['coins' => $result ?? []]);
+        session()->flash('dispensed', ['coins' => $coins ?? []]);
         return redirect()->route('vendingMachine.show');
     }
 

@@ -39,11 +39,12 @@ class VendingMachineService
         ];
     }
 
-    public function insertCoin(int $coin): void
+    public function insertCoin(int $coin): array
     {
         $this->refreshVendingMachine();
-        $this->vendingMachine->insertCoin($coin);
+        $result = $this->vendingMachine->insertCoin($coin);
         $this->dataProvider->saveVendingMachine($this->vendingMachine);
+        return $result;
     }
 
     public function selectItem(string $itemCode): array

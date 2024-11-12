@@ -24,12 +24,14 @@ class IdleState implements VendingMachineState
         $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
     }
 
-    public function insertCoin($coin): void
+    public function insertCoin($coin): array
     {
         $command = new InsertCoinCommand($this->machine, $coin);
-        $command->execute();
-
-        $this->machine->setHasMoneyState();
+        $result = $command->execute();
+        if (empty($result)) {
+            $this->machine->setHasMoneyState();
+        }
+        return $result;
     }
 
     public function returnCoins(): array

@@ -24,11 +24,12 @@ class HasMoneyState implements VendingMachineState
         $this->setMessage();
     }
 
-    public function insertCoin($coin): void
+    public function insertCoin($coin): array
     {
         $command = new InsertCoinCommand($this->machine, $coin);
-        $command->execute();
+        $result = $command->execute();
         $this->setMessage();
+        return $result;
     }
 
     public function returnCoins(): array

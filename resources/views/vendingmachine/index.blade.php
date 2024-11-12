@@ -97,9 +97,11 @@
 
     <?php /** @var VendingMachinePresenter $presenter */ ?>
     @if ($presenter && ($presenter->getItem() || count($presenter->getCoins())))
-        <button onclick="document.getElementById('success-sound').play()" class="btn btn-link" id="play-sound-btn">
-            <i class="fas fa-fist-raised"></i> Punch machine
-        </button>
+        @if (($presenter->getItem()))
+            <button onclick="document.getElementById('success-sound').play()" class="btn btn-link" id="play-sound-btn">
+                <i class="fas fa-fist-raised"></i> Bumb machine if stuck
+            </button>
+        @endif
         <div class="alert alert-success">
             @if (($presenter->getItem()))
                 <h4>Item Dispensed:</h4>

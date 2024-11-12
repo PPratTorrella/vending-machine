@@ -29,9 +29,9 @@ class VendingMachine
         $this->userMoneyManager = new UserMoneyManager();
     }
 
-    public function insertCoin($value)
+    public function insertCoin($value): array
     {
-        $this->state->insertCoin($value);
+        return $this->state->insertCoin($value);
     }
 
     public function returnCoins()
