@@ -2,7 +2,7 @@
 
 namespace App\Presenters;
 
-class VendingMachineResultPresenter
+class VendingMachinePresenter
 {
     protected array $result;
 
@@ -15,8 +15,8 @@ class VendingMachineResultPresenter
     {
         if (isset($this->result['item'])) {
             $itemName = $this->result['item']->getName();
-            $price = number_format($this->result['item']->getPrice() / 100, 2);
-            return "$itemName - €$price";
+            $price = $this->formatPrice($this->result['item']->getPrice());
+            return "$itemName - $price";
         }
 
         return null;
@@ -31,7 +31,7 @@ class VendingMachineResultPresenter
         $coinCounts = array_count_values($this->result['change']);
 
         return array_map(function ($coinValue, $count) {
-            return "$count x €" . number_format($coinValue / 100, 2);
+            return "$count x " . $this->formatPrice($coinValue);
         }, array_keys($coinCounts), $coinCounts);
     }
 
@@ -41,5 +41,10 @@ class VendingMachineResultPresenter
             'item' => $this->getItem(),
             'change' => $this->getChange(),
         ];
+    }
+
+    public function formatPrice(int $cents): string
+    {
+        return '€' . number_format($cents / 100, 2);
     }
 }

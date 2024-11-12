@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Presenters\VendingMachinePresenter;
 use App\Services\VendingMachineService;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,7 +21,9 @@ class VendingMachineController extends Controller
     public function show()
     {
         $result = session('result', []);
-        $viewData = $this->vendingMachineService->getViewData($result);
+        $presenter = new VendingMachinePresenter($result);
+        $viewData = $this->vendingMachineService->getViewData();
+        $viewData['presenter'] = $presenter;
         return view('vendingMachine.index', $viewData);
     }
 

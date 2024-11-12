@@ -83,18 +83,18 @@
             {{ session('message') }}
         </div>
     @endif
-    @if ($presentedResult && $presentedResult->getItem())
+    @if ($presenter && $presenter->getItem())
         <button onclick="document.getElementById('success-sound').play()" class="btn btn-link" id="play-sound-btn">
             <i class="fas fa-fist-raised"></i> Punch machine
         </button>
         <div class="alert alert-success">
             <h4>Item Dispensed:</h4>
-            <p>{{ $presentedResult->getItem() }}</p>
+            <p>{{ $presenter->getItem() }}</p>
 
-            @if ($presentedResult->getChange() && count($presentedResult->getChange()) > 0)
+            @if ($presenter->getChange() && count($presenter->getChange()) > 0)
                 <h4>Change Returned:</h4>
                 <ul>
-                    @foreach ($presentedResult->getChange() as $coin)
+                    @foreach ($presenter->getChange() as $coin)
                         <li>{{ $coin }}</li>
                     @endforeach
                 </ul>
@@ -159,7 +159,7 @@
                             <div class="card-body">
                                 <div class="product-code" title="Click to select this item">{{ $code }}</div>
                                 <h5 class="card-title">{{ $itemData['item']->getName() }}</h5>
-                                <p class="card-text"><strong>Price:</strong> {{ $itemData['item']->getPrice() }}¢</p>
+                                <p class="card-text"><strong>Price:</strong> {{ $presenter->formatPrice($itemData['item']->getPrice()) }}</p>
                                 <p class="card-text"><strong>Stock:</strong> {{ $itemData['count'] }}</p>
                                 <i class="fas fa-wine-bottle product-icon"></i>
                             </div>
@@ -172,7 +172,7 @@
             <ul class="list-inline">
                 @foreach($inventory['coins'] as $coinValue => $count)
                     <li class="list-inline-item">
-                        <i class="fas fa-coins coin-icon"></i> {{ $coinValue }}¢ x {{ $count }}
+                        <i class="fas fa-coins coin-icon"></i> {{ $presenter->formatPrice($coinValue) }} x {{ $count }}
                     </li>
                 @endforeach
             </ul>
