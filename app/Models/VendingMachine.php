@@ -66,6 +66,11 @@ class VendingMachine
         ];
     }
 
+    public function updateInventory($items, $coins): void
+    {
+        $this->inventory->updateInventory($items, $coins);
+    }
+
     public function hasStock($itemCode): bool
     {
         return $this->inventory->items[$itemCode]['count'] > 0;
@@ -87,6 +92,11 @@ class VendingMachine
         return !empty($changeCoins);
     }
 
+    public function setInsertedCoins($coins): void
+    {
+        $this->userMoneyManager->insertedCoins = $coins;
+    }
+
     public function setDisplayMessage(string $message): void
     {
         $this->displayMessage = $message;
@@ -100,6 +110,11 @@ class VendingMachine
     public function setIdleState(): void
     {
         $this->state = new IdleState($this); // @todo see what to do with these
+    }
+
+    public function setState(VendingMachineState $state): void
+    {
+        $this->state = $state;
     }
 
     public function setHasMoneyState(): void

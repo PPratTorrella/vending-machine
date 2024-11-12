@@ -5,6 +5,7 @@ namespace App\States\Concrete;
 use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Commands\Concrete\VendingMachine\ServiceCommand;
+use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
 
@@ -13,7 +14,7 @@ class IdleState implements VendingMachineState
     const DISPLAY_MESSAGE = 'Please insert coins.';
     const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';
     const RETURN_COINS_MESSAGE = 'No coins to return.';
-    const STATE_NAME = 'idleState';
+    const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
 
     private VendingMachine $machine;
 

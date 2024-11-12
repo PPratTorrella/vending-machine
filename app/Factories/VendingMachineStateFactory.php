@@ -10,11 +10,22 @@ use Exception;
 
 class VendingMachineStateFactory
 {
+    const IDLE_STATE_NAME = 'idleState';
+    const HAS_MONEY_STATE_NAME = 'hasMoneyState';
+
     protected static array $stateMap = [
-        'idleState' => IdleState::class,
-        'hasMoneyState' => HasMoneyState::class,
+        self::IDLE_STATE_NAME => IdleState::class,
+        self::HAS_MONEY_STATE_NAME => HasMoneyState::class,
     ];
 
+    /**
+     * Beware will set default message when creating state
+     *
+     * @param string $stateName
+     * @param VendingMachine $vendingMachine
+     * @return VendingMachineState
+     * @throws Exception
+     */
     public static function create(string $stateName, VendingMachine $vendingMachine): VendingMachineState
     {
         $stateClass = self::$stateMap[$stateName] ?? null;

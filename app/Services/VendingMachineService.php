@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DataProviders\VendingMachine\DataProvider;
 use App\Models\VendingMachine;
+use App\Presenters\VendingMachineResultPresenter;
 
 class VendingMachineService
 {
@@ -21,9 +22,11 @@ class VendingMachineService
         $this->vendingMachine = $this->dataProvider->getVendingMachine();
     }
 
-    public function getViewData(): array
+    public function getViewData($result = null): array
     {
         $this->refreshVendingMachine();
+
+        $presentedResult = $result ? new VendingMachineResultPresenter($result) : null;
 
         //@todo depend on an interface, elsewhere too
         return [
@@ -31,6 +34,7 @@ class VendingMachineService
             'displayMessage' => $this->vendingMachine->getDisplayMessage(),
             'insertedCoins' => $this->vendingMachine->getInsertedCoins(),
             'totalInserted' => $this->vendingMachine->getInsertedCoinsTotal(),
+            'presentedResult' => $presentedResult,
         ];
     }
 

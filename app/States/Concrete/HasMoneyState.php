@@ -5,6 +5,7 @@ namespace App\States\Concrete;
 use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Commands\Concrete\VendingMachine\ReturnCoinsCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
+use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
 use App\States\Interfaces\VendingMachineState;
 
@@ -13,7 +14,7 @@ class HasMoneyState implements VendingMachineState
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
     const TOTAL_SUM_PREFIX = 'Total inserted: ';
     const SERVICE_MESSAGE = 'Please wait for current transaction to finish.';
-    const STATE_NAME = 'hasMoneyState';
+    const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
 
     private VendingMachine $machine;
 
@@ -46,7 +47,9 @@ class HasMoneyState implements VendingMachineState
         $command = new SelectItemCommand($this->machine, $itemCode);
         $result = $command->execute();
 
-        if (!empty($result['item'])) {
+        if (empty($result['item'])) {
+            $this->setMessage('Item has no stock or you have insufficient funds.'); //@Todo give status code or smthing back from command to know what happened
+        } else {
             $this->machine->setIdleState();
         }
 
@@ -55,8 +58,6 @@ class HasMoneyState implements VendingMachineState
 
     public function service($items = [], $coins = []): void
     {
-        // we could allow this, but as an example of State control we block.
-        // Also, we don't care now about a service attempt data getting lost, but depending on usage of api this might be an issue
         $this->machine->setDisplayMessage(self::SERVICE_MESSAGE);
     }
 
@@ -65,11 +66,11 @@ class HasMoneyState implements VendingMachineState
         return self::STATE_NAME;
     }
 
-    private function setMessage()
+    private function setMessage($info = null)
     {
         $total = $this->machine->getInsertedCoinsTotal();
         $totalFormatted = number_format($total / 100, 2);
-        $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . self::DISPLAY_MESSAGE;
+        $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . ($info ?? self::DISPLAY_MESSAGE);
         $this->machine->setDisplayMessage($message);
     }
 }

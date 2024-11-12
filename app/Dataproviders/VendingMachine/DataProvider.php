@@ -4,7 +4,6 @@ namespace App\Dataproviders\VendingMachine;
 
 use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
-use App\Commands\Concrete\VendingMachine\ServiceCommand;
 use Exception;
 
 class DataProvider
@@ -25,21 +24,19 @@ class DataProvider
                 'price' => $itemData['item']->getPrice(),
             ];
         }, $vendingMachineData['inventory']['items']);
-
         $coins = $vendingMachineData['inventory']['coins'];
+        $vendingMachine->updateInventory($items, $coins);
 
-        $command = new ServiceCommand($vendingMachine, $items, $coins);
-        $command->execute();
-
-        $vendingMachine->userMoneyManager->insertedCoins = $vendingMachineData['insertedCoins'];
-        $vendingMachine->setDisplayMessage($vendingMachineData['displayMessage']);
+        $vendingMachine->setInsertedCoins($vendingMachineData['insertedCoins']);
 
         try {
             $state = VendingMachineStateFactory::create($vendingMachineData['state'], $vendingMachine);
-            $vendingMachine->state = $state;
+            $vendingMachine->setState($state);
         } catch (Exception $e) {
             $vendingMachine->setIdleState();
         }
+
+        $vendingMachine->setDisplayMessage($vendingMachineData['displayMessage']);
 
         return $vendingMachine;
     }
