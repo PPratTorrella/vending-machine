@@ -22,7 +22,7 @@ class DataProvider
             return $this->storage->getVendingMachine();
         } catch (Exception $e) {
             Log::error("Failed to retrieve vending machine: " . $e->getMessage());
-            throw new Exception("Unable to load the vending machine. Please try again later.");
+            throw new Exception("Unable to load the vending machine.");
         }
     }
 
@@ -32,7 +32,7 @@ class DataProvider
             $this->storage->saveVendingMachine($vendingMachine);
         } catch (Exception $e) {
             Log::error("Failed to save vending machine: " . $e->getMessage());
-            throw new Exception("Unable to save the vending machine. Please try again later.");
+            throw new Exception("Unable to save the vending machine.");
         }
     }
 
@@ -42,7 +42,7 @@ class DataProvider
             return $this->storage->initDefault();
         } catch (Exception $e) {
             Log::error("Failed to init default vending machine: " . $e->getMessage());
-            throw new Exception("Unable to init default vending machine. Please try again later.");
+            throw new Exception("Unable to init default vending machine.");
         }
     }
 }

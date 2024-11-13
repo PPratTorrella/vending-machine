@@ -28,8 +28,6 @@ class AppServiceProvider extends ServiceProvider
             return new Inventory($app->make(ChangeCalculatorHelper::class));
         });
 
-        $this->app->bind(StorageInterface::class, SessionStorage::class);
-
         $this->app->bind(StorageInterface::class, function ($app) {
             return new SessionStorage(
                 $app->make(Session::class),
