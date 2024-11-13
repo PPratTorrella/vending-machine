@@ -15,6 +15,7 @@ class IdleState implements VendingMachineState
     const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';
     const RETURN_COINS_MESSAGE = 'No coins to return.';
     const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
+    const INSERTED_COIN_NOT_VALID = 'Returned invalid coin.';
 
     private VendingMachine $machine;
 
@@ -30,6 +31,8 @@ class IdleState implements VendingMachineState
         $result = $command->execute();
         if (empty($result)) {
             $this->machine->setHasMoneyState();
+        } else {
+            $this->setMessage(self::INSERTED_COIN_NOT_VALID, true);
         }
         return $result;
     }

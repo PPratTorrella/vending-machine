@@ -29,7 +29,7 @@ class VendingMachineController extends Controller
             $presenter->setCoins($dispensed['coins']);
         }
 
-        $validCoins = Config::get('vending.valid_coins', []);
+        $validCoins = Config::get('vending.valid_coins');
         $coinLabels = collect($validCoins)->mapWithKeys(fn($coin) => [$coin => $presenter->formatPrice($coin)]);
 
         $viewData = array_merge(

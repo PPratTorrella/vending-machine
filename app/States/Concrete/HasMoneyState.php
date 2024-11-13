@@ -15,6 +15,7 @@ class HasMoneyState implements VendingMachineState
     const TOTAL_SUM_PREFIX = 'Total inserted: ';
     const SERVICE_MESSAGE = 'Service not allowed. Please wait for current transaction to finish.';
     const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
+    const INSERTED_COIN_NOT_VALID = 'Returned invalid last coin.';
 
     private VendingMachine $machine;
 
@@ -28,7 +29,8 @@ class HasMoneyState implements VendingMachineState
     {
         $command = new InsertCoinCommand($this->machine, $coin);
         $result = $command->execute();
-        $this->setMessage(null, true);
+        $message = empty($result) ? null : self::INSERTED_COIN_NOT_VALID;
+        $this->setMessage($message, true);
         return $result;
     }
 
