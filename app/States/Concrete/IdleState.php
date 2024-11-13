@@ -21,7 +21,7 @@ class IdleState implements VendingMachineState
     public function __construct($machine)
     {
         $this->machine = $machine;
-        $this->machine->setDisplayMessage(self::DISPLAY_MESSAGE);
+        $this->setMessage(null, true);
     }
 
     public function insertCoin($coin): array
@@ -37,13 +37,13 @@ class IdleState implements VendingMachineState
     public function returnCoins(): array
     {
         // for extra safety could still call command, but in this project we'll trust states
-        $this->machine->setDisplayMessage(self::RETURN_COINS_MESSAGE);
+        $this->setMessage(self::RETURN_COINS_MESSAGE);
         return [];
     }
 
     public function selectItem($itemCode): array
     {
-        $this->machine->setDisplayMessage(self::SELECTED_ITEM_MESSAGE);
+        $this->setMessage(self::SELECTED_ITEM_MESSAGE);
 
         $command = new SelectItemCommand($this->machine, $itemCode, allowed: false);
         return $command->execute();
@@ -59,5 +59,13 @@ class IdleState implements VendingMachineState
     public function getName(): string
     {
         return self::STATE_NAME;
+    }
+
+    public function setMessage($message = null, $prefixDefault = false): void
+    {
+        if ($prefixDefault) {
+            $message = self::DISPLAY_MESSAGE . $message;
+        }
+        $this->machine->setDisplayMessage($message);
     }
 }

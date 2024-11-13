@@ -13,4 +13,6 @@ interface VendingMachineState
     public function service(array $items, array $coins): bool;
 
     public function getName(): string;
+
+    public function setMessage($message, $prefixDefault = false): void;
 }

@@ -21,14 +21,14 @@ class HasMoneyState implements VendingMachineState
     public function __construct($machine)
     {
         $this->machine = $machine;
-        $this->setMessage();
+        $this->setMessage(null, true);
     }
 
     public function insertCoin($coin): array
     {
         $command = new InsertCoinCommand($this->machine, $coin);
         $result = $command->execute();
-        $this->setMessage();
+        $this->setMessage(null, true);
         return $result;
     }
 
@@ -52,7 +52,7 @@ class HasMoneyState implements VendingMachineState
 
     public function service($items = [], $coins = []): bool
     {
-        $this->machine->setDisplayMessage(self::SERVICE_MESSAGE);
+        $this->setMessage(self::SERVICE_MESSAGE, true);
         return false;
     }
 
@@ -61,11 +61,16 @@ class HasMoneyState implements VendingMachineState
         return self::STATE_NAME;
     }
 
-    private function setMessage($info = null)
+    public function setMessage($message = null, $prefixDefault = false): void
     {
-        $total = $this->machine->getInsertedCoinsTotal();
-        $totalFormatted = number_format($total / 100, 2);
-        $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . ($info ?? self::DISPLAY_MESSAGE);
+        if (empty($message)) {
+            $message = self::DISPLAY_MESSAGE;
+        }
+        if ($prefixDefault) {
+            $total = $this->machine->getInsertedCoinsTotal();
+            $totalFormatted = number_format($total / 100, 2);
+            $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . $message;
+        }
         $this->machine->setDisplayMessage($message);
     }
 }

@@ -31,19 +31,19 @@ class SelectItemCommand implements Command
         }
 
         if (!$this->machine->codeExists($this->itemCode)) {
-            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_CODE_NOT_SET;
+            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_CODE_NOT_SET, true);
             return $result;
         }
         if (!$this->machine->hasStock($this->itemCode)) {
-            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK;
+            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK, true);
             return $result;
         }
         if (!$this->machine->hasFundsForItem($this->itemCode)) {
-            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS;
+            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, true);
             return $result;
         }
         if (!$this->machine->hasChange($this->itemCode)) {
-            $this->machine->displayMessage .= ' ' . VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE;
+            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE, true);
             return $result;
         }
 
