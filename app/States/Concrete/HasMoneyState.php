@@ -7,6 +7,7 @@ use App\Commands\Concrete\VendingMachine\ReturnCoinsCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
+use App\Presenters\VendingMachinePresenter;
 use App\States\Interfaces\VendingMachineState;
 
 class HasMoneyState implements VendingMachineState
@@ -14,14 +15,16 @@ class HasMoneyState implements VendingMachineState
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
     const TOTAL_SUM_PREFIX = 'Total inserted: ';
     const SERVICE_MESSAGE = 'Service not allowed. Please wait for current transaction to finish.';
-    const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
     const INSERTED_COIN_NOT_VALID = 'Returned invalid last coin.';
+    const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
 
     private VendingMachine $machine;
+    private VendingMachinePresenter $presenter;
 
-    public function __construct($machine)
+    public function __construct($machine, VendingMachinePresenter $presenter)
     {
         $this->machine = $machine;
+        $this->presenter = $presenter;
         $this->setMessage(null, true);
     }
 
@@ -70,7 +73,7 @@ class HasMoneyState implements VendingMachineState
         }
         if ($prefixDefault) {
             $total = $this->machine->getInsertedCoinsTotal();
-            $totalFormatted = number_format($total / 100, 2);
+            $totalFormatted = $this->presenter->formatPrice($total);
             $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . $message;
         }
         $this->machine->setDisplayMessage($message);

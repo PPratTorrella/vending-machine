@@ -7,6 +7,7 @@ use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineState;
 use Exception;
+use Illuminate\Support\Facades\App;
 
 class VendingMachineStateFactory
 {
@@ -34,7 +35,7 @@ class VendingMachineStateFactory
             throw new Exception("Invalid or missing state: {$stateName}");
         }
 
-        $state = new $stateClass($vendingMachine);
+        $state = App::make($stateClass, ['machine' => $vendingMachine]);
 
         if (!$state instanceof VendingMachineState) {
             throw new Exception("{$stateClass} is not a valid VendingMachineState.");

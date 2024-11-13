@@ -14,8 +14,8 @@ class IdleState implements VendingMachineState
     const DISPLAY_MESSAGE = 'Please insert coins.';
     const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';
     const RETURN_COINS_MESSAGE = 'No coins to return.';
-    const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
     const INSERTED_COIN_NOT_VALID = 'Returned invalid coin.';
+    const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
 
     private VendingMachine $machine;
 

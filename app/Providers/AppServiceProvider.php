@@ -4,9 +4,12 @@ namespace App\Providers;
 
 use App\Factories\VendingMachineStateFactory;
 use App\Helpers\ChangeCalculatorHelper;
+use App\Models\VendingMachine;
+use App\Presenters\VendingMachinePresenter;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use App\Repositories\VendingMachine\SessionStorage;
 use App\Services\Inventory;
+use App\States\Concrete\HasMoneyState;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -34,6 +37,13 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(VendingMachineStateFactory::class),
                 Config::get('vending.default_items', []),
                 Config::get('vending.default_coins', [])
+            );
+        });
+
+        $this->app->bind(HasMoneyState::class, function ($app, $params) {
+            return new HasMoneyState(
+                $params['machine'] ?? $app->make(VendingMachine::class),
+                $app->make(VendingMachinePresenter::class)
             );
         });
     }
