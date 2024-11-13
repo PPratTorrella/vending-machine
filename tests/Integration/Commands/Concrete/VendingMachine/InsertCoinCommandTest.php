@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Commands\Concrete\VendingMachine;
+namespace Tests\Integration\Commands\Concrete\VendingMachine;
 
 use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Models\VendingMachine;
@@ -10,7 +10,7 @@ class InsertCoinCommandTest extends TestCase
 {
     public function testExecuteInsertsValidCoin()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $validCoin = 100;
         $command = new InsertCoinCommand($vendingMachine, $validCoin);
@@ -22,9 +22,7 @@ class InsertCoinCommandTest extends TestCase
 
     public function testExecuteWithInvalidCoin()
     {
-        $this->markTestSkipped('Need to start validate coins');
-
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $invalidCoin = 3;
         $command = new InsertCoinCommand($vendingMachine, $invalidCoin);
@@ -32,8 +30,5 @@ class InsertCoinCommandTest extends TestCase
 
         $this->assertNotContains($invalidCoin, $vendingMachine->getInsertedCoins());
         $this->assertEquals(0, $vendingMachine->getInsertedCoinsTotal());
-        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_INVALID_COIN, $vendingMachine->displayMessage);
-
-        //@todo needs to dispense this coin out of the machine?
     }
 }

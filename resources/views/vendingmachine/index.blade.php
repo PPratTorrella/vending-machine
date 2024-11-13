@@ -168,7 +168,7 @@
                 </div>
                 <div class="form-group">
                     <label for="coins">Coins JSON:</label>
-                    <textarea name="coins" id="coins" class="form-control" rows="1"> {"100": 10, "50": 10} </textarea>
+                    <textarea name="coins" id="coins" class="form-control" rows="1"> {"100": 10, "25": 10} </textarea>
                 </div>
                 <button type="submit" class="btn btn-warning">Update Inventory <i class="fas fa-tools"></i></button>
             </form>

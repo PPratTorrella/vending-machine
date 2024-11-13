@@ -3,15 +3,15 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 
 class ServiceCommand implements Command
 {
-    private VendingMachine $machine;
-    private mixed $items;
-    private mixed $coins;
+    private VendingMachineInterface $machine;
+    private array $items;
+    private array $coins;
 
-    public function __construct(VendingMachine $machine, $items = [], $coins = [])
+    public function __construct(VendingMachineInterface $machine, $items = [], $coins = [])
     {
         $this->machine = $machine;
         $this->items = $items;

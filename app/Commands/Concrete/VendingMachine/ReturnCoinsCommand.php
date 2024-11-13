@@ -3,13 +3,13 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 
 class ReturnCoinsCommand implements Command
 {
-    private VendingMachine $machine;
+    private VendingMachineInterface $machine;
 
-    public function __construct(VendingMachine $machine)
+    public function __construct(VendingMachineInterface $machine)
     {
         $this->machine = $machine;
     }

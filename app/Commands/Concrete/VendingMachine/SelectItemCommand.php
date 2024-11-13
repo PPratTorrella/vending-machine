@@ -10,7 +10,7 @@ class SelectItemCommand implements Command
 {
     private VendingMachineInterface $machine;
     private $itemCode;
-    private $allowed;
+    private bool $allowed;
 
     public function __construct(VendingMachineInterface $machine, $itemCode, $allowed = true)
     {
@@ -66,7 +66,7 @@ class SelectItemCommand implements Command
             $this->machine->inventory->items[$this->itemCode]['count'] = $originalItemCount;
             $this->machine->inventory->coins = $originalInventoryCoins;
             $this->machine->userMoneyManager->insertedCoins = $originalUserCoins;
-            $this->machine->displayMessage = $this->machine::ERROR_MESSAGE_SELECT_ITEM;
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_SELECT_ITEM);
             return $result;
         }
 

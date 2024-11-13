@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
+use App\Factories\VendingMachineStateFactory;
 use App\Models\Interfaces\VendingMachineInterface;
 use App\Services\Inventory;
 use App\Services\UserMoneyManager;
-use App\States\Concrete\HasMoneyState;
-use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineStateInterface;
-use Illuminate\Support\Facades\App;
 
 class VendingMachine implements VendingMachineInterface
 {
@@ -17,18 +15,19 @@ class VendingMachine implements VendingMachineInterface
     const ERROR_MESSAGE_NOT_ENOUGH_CHANGE = 'Not enough change. Transaction cancelled.';
     const ERROR_MESSAGE_OUT_OF_STOCK = 'Item out of stock.';
     const ERROR_MESSAGE_CODE_NOT_SET = 'Invalid code.';
-    const ERROR_MESSAGE_INVALID_COIN = 'Invalid coin.';
 
     public VendingMachineStateInterface $state;
     public Inventory $inventory;
     public UserMoneyManager $userMoneyManager;
-    public string $displayMessage;
+    private string $displayMessage;
+    private VendingMachineStateFactory $stateFactory;
 
-    public function __construct()
+    public function __construct(VendingMachineStateFactory $stateFactory, Inventory $inventory, UserMoneyManager $userMoneyManager)
     {
-        $this->inventory = app(Inventory::class);
+        $this->inventory = $inventory;
+        $this->stateFactory = $stateFactory;
+        $this->userMoneyManager = $userMoneyManager;
         $this->setIdleState();
-        $this->userMoneyManager = new UserMoneyManager();
     }
 
     public function insertCoin($coin): array
@@ -121,17 +120,16 @@ class VendingMachine implements VendingMachineInterface
 
     public function setIdleState(): void
     {
-        $this->state = new IdleState($this); // @todo see what to do with these
+        $this->state = $this->stateFactory->create(VendingMachineStateFactory::IDLE_STATE_NAME, $this);
     }
 
     public function setHasMoneyState(): void
     {
-        $this->state = App::make(HasMoneyState::class, ['machine' => $this]);
+        $this->state = $this->stateFactory->create(VendingMachineStateFactory::HAS_MONEY_STATE_NAME, $this);
     }
 
     public function setState(VendingMachineStateInterface $state): void
     {
         $this->state = $state;
     }
-
 }

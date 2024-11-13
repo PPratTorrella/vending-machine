@@ -2,13 +2,13 @@
 
 namespace App\Repositories\VendingMachine\Interfaces;
 
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 
 interface StorageInterface
 {
-    public function getVendingMachine(): VendingMachine;
+    public function getVendingMachine(): VendingMachineInterface;
 
-    public function saveVendingMachine(VendingMachine $vendingMachine): void;
+    public function saveVendingMachine(VendingMachineInterface $vendingMachine): void;
 
-    public function initDefault(): VendingMachine;
+    public function initDefault(): VendingMachineInterface;
 }

@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Unit\Commands\Concrete\VendingMachine;
+namespace Tests\Integration\Commands\Concrete\VendingMachine;
 
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Services\VendingMachineService;
 use App\Models\VendingMachine;
 use App\States\Concrete\HasMoneyState;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class SelectItemCommandTest extends TestCase
@@ -63,7 +64,7 @@ class SelectItemCommandTest extends TestCase
 
         $this->assertNull($result['item']);
         $this->assertEmpty($result['coins']);
-        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, $vendingMachine->displayMessage);
+        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, $vendingMachine->getDisplayMessage());
     }
 
     public function testExecuteWithOutOfStock()
@@ -83,7 +84,7 @@ class SelectItemCommandTest extends TestCase
 
         $this->assertNull($result['item']);
         $this->assertEmpty($result['coins']);
-        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK, $vendingMachine->displayMessage);
+        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK, $vendingMachine->getDisplayMessage());
     }
 
     public function testExecuteWithInsufficientChange()
@@ -103,7 +104,7 @@ class SelectItemCommandTest extends TestCase
 
         $this->assertNull($result['item']);
         $this->assertEmpty($result['coins']);
-        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE, $vendingMachine->displayMessage);
+        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE, $vendingMachine->getDisplayMessage());
     }
 
     public function testExecuteWhenCommandNotAllowed()
@@ -129,7 +130,8 @@ class SelectItemCommandTest extends TestCase
         $vendingMachineService = app(VendingMachineService::class);
 
         $vendingMachine = $vendingMachineService->initDefault();
-        $vendingMachine->setState(new HasMoneyState($vendingMachine));
+        $hasMoneyState = App::make(HasMoneyState::class, ['machine' => $vendingMachine]);
+        $vendingMachine->setState($hasMoneyState);
 
         $vendingMachine->inventory->updateInventory([
             '70' => ['name' => 'Chips', 'price' => 88.5, 'count' => 10], // won't have 1.5 cents to give back
@@ -152,14 +154,14 @@ class SelectItemCommandTest extends TestCase
 
         $vendingMachine = $vendingMachineService->initDefault();
 
-        $itemCode = '65'; // 120 cents default item (Juice)
-        $vendingMachine->userMoneyManager->insertedCoins = [100, 20];
+        $itemCode = '65';
+        $vendingMachine->userMoneyManager->insertedCoins = [100];
 
         $command = new SelectItemCommand($vendingMachine, $itemCode);
         $result = $command->execute();
 
         $this->assertNotNull($result['item']);
-        $this->assertSame(120.0, $result['item']->getPrice());
+        $this->assertSame(100.0, $result['item']->getPrice());
         $this->assertSame('Juice', $result['item']->getName());
         $this->assertEmpty($result['coins']);
     }
@@ -179,6 +181,6 @@ class SelectItemCommandTest extends TestCase
 
         $this->assertNull($result['item']);
         $this->assertEmpty($result['coins']);
-        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_CODE_NOT_SET, $vendingMachine->displayMessage);
+        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_CODE_NOT_SET, $vendingMachine->getDisplayMessage());
     }
 }

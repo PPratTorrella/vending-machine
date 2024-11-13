@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use App\Factories\VendingMachineStateFactory;
 use App\Helpers\ChangeCalculatorHelper;
 use App\Models\Item;
 use App\Models\VendingMachine;
@@ -10,7 +11,7 @@ use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use Exception;
 use Mockery;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class vendingMachineTest extends TestCase
 {
@@ -34,7 +35,7 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_gets_item_ok()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $inventory = $this->getDefaultInventory();
         $vendingMachine->service($inventory['items'], $inventory['coins']);
@@ -50,7 +51,7 @@ class vendingMachineTest extends TestCase
 
         $return = $vendingMachine->selectItem(50);
         $this->assertEquals('Water', $return['item']->name);
-        $this->assertEquals([25, 25, 10], $return['change'], 'Should return optimal combination for 60 cents');
+        $this->assertEquals([25, 25, 10], $return['coins'], 'Should return optimal combination for 60 cents');
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
 
         $askReturnAGain = $vendingMachine->returnCoins();
@@ -66,7 +67,7 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_returns_money_ok()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $inventory = $this->getDefaultInventory();
         $vendingMachine->service($inventory['items'], $inventory['coins']);
@@ -93,7 +94,8 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_idle_not_returns_money_ok()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
+
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
         $askReturnAGain = $vendingMachine->returnCoins();
         $this->assertEmpty($askReturnAGain);
@@ -101,25 +103,25 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_try_get_item_money_short_ok()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $inventory = $this->getDefaultInventory();
         $vendingMachine->service($inventory['items'], $inventory['coins']);
 
         $this->assertInstanceOf(IdleState::class, $vendingMachine->state);
-        $this->assertEquals(IdleState::DISPLAY_MESSAGE, $vendingMachine->displayMessage);
+        $this->assertEquals(IdleState::DISPLAY_MESSAGE, $vendingMachine->getDisplayMessage());
 
         $vendingMachine->selectItem(50); // water
-        $this->assertEquals(IdleState::SELECTED_ITEM_MESSAGE, $vendingMachine->displayMessage);
+        $this->assertEquals(IdleState::SELECTED_ITEM_MESSAGE, $vendingMachine->getDisplayMessage());
 
         $vendingMachine->insertCoin(10);
         $vendingMachine->insertCoin(25);
 
         $return = $vendingMachine->selectItem(50); // water
         $this->assertEmpty($return['item']);
-        $this->assertEmpty($return['change']);
+        $this->assertEmpty($return['coins']);
         $this->assertInstanceOf(HasMoneyState::class, $vendingMachine->state);
-        $this->assertEquals(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, $vendingMachine->displayMessage);
+        $this->assertStringContainsString(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, $vendingMachine->getDisplayMessage());
 
         $coins = $vendingMachine->returnCoins();
         $this->assertEquals(35, array_sum($coins));
@@ -128,7 +130,7 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_servicing_ok()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         $inventory = $this->getDefaultInventory();
         $vendingMachine->service($inventory['items'], $inventory['coins']);
@@ -162,7 +164,7 @@ class vendingMachineTest extends TestCase
 
     public function test_vending_machine_transaction_rollback_on_failure()
     {
-        $vendingMachine = new VendingMachine();
+        $vendingMachine = app(VendingMachine::class);
 
         // mock inventory to fail on adding coins
         $inventoryMock = Mockery::mock(Inventory::class)->makePartial();
@@ -186,6 +188,6 @@ class vendingMachineTest extends TestCase
         $this->assertEquals($inventoryBefore['items'][50]['count'], $inventoryAfter['items'][50]['count'], 'Item count should be rolled back');
         $this->assertEquals($inventoryBefore['coins'], $inventoryAfter['coins'], 'Coins in inventory should be rolled back');
         $this->assertEquals($originalUserCoins, $vendingMachine->userMoneyManager->getInsertedCoins(), 'User coins should be rolled back');
-        $this->assertEquals(VendingMachine::ERROR_MESSAGE_SELECT_ITEM, $vendingMachine->displayMessage);
+        $this->assertEquals(VendingMachine::ERROR_MESSAGE_SELECT_ITEM, $vendingMachine->getDisplayMessage());
     }
 }

@@ -32,11 +32,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(StorageInterface::class, function ($app) {
+            $vendingMachineFactory = fn() => $app->make(VendingMachine::class); // less overhead
+
             return new SessionStorage(
                 $app->make(Session::class),
                 $app->make(VendingMachineStateFactory::class),
                 Config::get('vending.default_items', []),
-                Config::get('vending.default_coins', [])
+                Config::get('vending.default_coins', []),
+                $vendingMachineFactory,
             );
         });
 

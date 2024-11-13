@@ -2,7 +2,7 @@
 
 namespace App\DataProviders\VendingMachine;
 
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -16,7 +16,7 @@ class DataProvider
         $this->storage = $storage;
     }
 
-    public function getVendingMachine(): VendingMachine
+    public function getVendingMachine(): VendingMachineInterface
     {
         try {
             return $this->storage->getVendingMachine();
@@ -26,7 +26,7 @@ class DataProvider
         }
     }
 
-    public function saveVendingMachine(VendingMachine $vendingMachine): void
+    public function saveVendingMachine(VendingMachineInterface $vendingMachine): void
     {
         try {
             $this->storage->saveVendingMachine($vendingMachine);
@@ -36,7 +36,7 @@ class DataProvider
         }
     }
 
-    public function initDefault(): VendingMachine
+    public function initDefault(): VendingMachineInterface
     {
         try {
             return $this->storage->initDefault();

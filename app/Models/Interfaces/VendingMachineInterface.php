@@ -11,4 +11,6 @@ interface VendingMachineInterface
     public function selectItem($itemCode): array;
 
     public function service(array $items, array $coins): bool;
+
+    public function setDisplayMessage(string $message): void;
 }
