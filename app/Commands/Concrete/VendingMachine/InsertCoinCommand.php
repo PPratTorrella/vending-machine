@@ -4,10 +4,10 @@ namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
 use App\Models\VendingMachine;
+use Illuminate\Support\Facades\Config;
 
 class InsertCoinCommand implements Command
 {
-    private const VALID_COINS = [100, 25, 10, 5];
     private VendingMachine $machine;
     private int $coin;
 
@@ -20,13 +20,15 @@ class InsertCoinCommand implements Command
     public function execute(): array
     {
         if (!$this->isValidDenomination($this->coin)) {
-            return ['coin' => $this->coin];  // Return invalid coin for refund
+            return ['coin' => $this->coin];
         }
         $this->machine->userMoneyManager->insertCoin($this->coin);
         return []; // sucess
     }
 
-    private function isValidDenomination(int $coin): bool {
-        return in_array($coin, self::VALID_COINS, true);
+    private function isValidDenomination(int $coin): bool
+    {
+        $validCoins = Config::get('vending.valid_coins', []);
+        return in_array($coin, $validCoins, true);
     }
 }

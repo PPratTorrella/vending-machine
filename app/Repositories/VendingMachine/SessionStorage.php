@@ -11,11 +11,15 @@ class SessionStorage implements StorageInterface
 {
     protected Session $session;
     protected VendingMachineStateFactory $stateFactory;
+    private array $defaultItems;
+    private array $defaultCoins;
 
-    public function __construct(Session $session, VendingMachineStateFactory $stateFactory)
+    public function __construct(Session $session, VendingMachineStateFactory $stateFactory, array $defaultItems, array $defaultCoins)
     {
         $this->session = $session;
         $this->stateFactory = $stateFactory;
+        $this->defaultItems = $defaultItems;
+        $this->defaultCoins = $defaultCoins;
     }
 
     public function getVendingMachine(): VendingMachine
@@ -65,19 +69,8 @@ class SessionStorage implements StorageInterface
     public function initDefault(): VendingMachine
     {
         $vendingMachine = new VendingMachine();
-        $vendingMachine->inventory->updateInventory([
-            '55' => ['name' => 'Soda', 'price' => 150, 'count' => 10],
-            '60' => ['name' => 'Water', 'price' => 65, 'count' => 10],
-            '65' => ['name' => 'Juice', 'price' => 120, 'count' => 10],
-        ], [
-            100 => 10,
-            50 => 20,
-            25 => 30,
-            10 => 40,
-        ]);
-
+        $vendingMachine->inventory->updateInventory($this->defaultItems, $this->defaultCoins);
         $this->saveVendingMachine($vendingMachine);
-
         return $vendingMachine;
     }
 }

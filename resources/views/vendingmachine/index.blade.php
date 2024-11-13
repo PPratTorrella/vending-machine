@@ -128,18 +128,17 @@
                     <label for="coin" class="sr-only">Coin</label>
                     <select name="coin" id="coin" class="form-control" required>
                         <option value="" disabled selected>Select Coin</option>
-                        <option value="100">1 Dollar</option>
-                        <option value="50">50¢</option>
-                        <option value="25">25¢</option>
-                        <option value="10">10¢</option>
+                        @foreach ($coinLabels as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-2 ml-2">Insert <i class="fas fa-coins"></i></button>
             </form>
             <p>
                 Inserted Coins:
-                {{ implode(', ', array_map(fn($coin) => '€' . number_format($coin / 100, 2), $insertedCoins)) }}
-                (Total: €{{ number_format($totalInserted / 100, 2) }})
+                {{ $presenter->formatInsertedCoins($insertedCoins) }}
+                (Total: {{ $presenter->formatPrice($totalInserted) }})
             </p>
 
             <form action="{{ route('vendingMachine.returnCoins') }}" method="GET" class="mb-3">

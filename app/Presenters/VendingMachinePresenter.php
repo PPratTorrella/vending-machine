@@ -37,6 +37,11 @@ class VendingMachinePresenter
         return '€' . number_format($cents / 100, 2);
     }
 
+    public function formatInsertedCoins(array $insertedCoins): string
+    {
+        return implode(', ', array_map(fn($coin) => $this->formatPrice($coin), $insertedCoins));
+    }
+
     public function setItem(Item $item)
     {
         $this->item = $item;

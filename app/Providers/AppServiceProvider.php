@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Factories\VendingMachineStateFactory;
 use App\Helpers\ChangeCalculatorHelper;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use App\Repositories\VendingMachine\SessionStorage;
 use App\Services\Inventory;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +29,15 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(StorageInterface::class, SessionStorage::class);
+
+        $this->app->bind(StorageInterface::class, function ($app) {
+            return new SessionStorage(
+                $app->make(Session::class),
+                $app->make(VendingMachineStateFactory::class),
+                Config::get('vending.default_items', []),
+                Config::get('vending.default_coins', [])
+            );
+        });
     }
 
     /**

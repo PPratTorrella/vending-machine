@@ -7,6 +7,7 @@ use App\Services\VendingMachineService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 
 class VendingMachineController extends Controller
@@ -27,8 +28,15 @@ class VendingMachineController extends Controller
         if (!empty($dispensed['coins'])) {
             $presenter->setCoins($dispensed['coins']);
         }
-        $viewData = $this->vendingMachineService->getViewData();
-        $viewData['presenter'] = $presenter;
+
+        $validCoins = Config::get('vending.valid_coins', []);
+        $coinLabels = collect($validCoins)->mapWithKeys(fn($coin) => [$coin => $presenter->formatPrice($coin)]);
+
+        $viewData = array_merge(
+            $this->vendingMachineService->getViewData(),
+            compact('presenter', 'coinLabels')
+        );
+
         return view('vendingMachine.index', $viewData);
     }
 
