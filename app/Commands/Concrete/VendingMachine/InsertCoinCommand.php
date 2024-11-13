@@ -20,7 +20,7 @@ class InsertCoinCommand implements Command
     public function execute(): array
     {
         if (!$this->isValidDenomination($this->coin)) {
-            return ['coin' => $this->coin];
+            return [$this->coin];
         }
         $this->machine->userMoneyManager->insertCoin($this->coin);
         return []; // sucess

@@ -131,6 +131,7 @@
                         @foreach ($coinLabels as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
+                        <option value="2"> €0.02 (old coin)</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-2 ml-2">Insert <i class="fas fa-coins"></i></button>
