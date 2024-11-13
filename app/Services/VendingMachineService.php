@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\DataProviders\VendingMachine\DataProvider;
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 
 class VendingMachineService
 {
-    private VendingMachine $vendingMachine;
+    private VendingMachineInterface $vendingMachine;
     private DataProvider $dataProvider;
 
     public function __construct(DataProvider $dataProvider)
@@ -21,7 +21,7 @@ class VendingMachineService
         $this->vendingMachine = $this->dataProvider->getVendingMachine();
     }
 
-    public function initDefault(): VendingMachine
+    public function initDefault(): VendingMachineInterface
     {
         return $this->dataProvider->initDefault();
     }
@@ -30,7 +30,6 @@ class VendingMachineService
     {
         $this->refreshVendingMachine();
 
-        //@todo depend on an interface, elsewhere too
         return [
             'inventory' => $this->vendingMachine->getInventory(),
             'displayMessage' => $this->vendingMachine->getDisplayMessage(),
