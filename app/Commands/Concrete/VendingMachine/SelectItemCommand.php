@@ -3,16 +3,16 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 use Exception;
 
 class SelectItemCommand implements Command
 {
-    private VendingMachine $machine;
+    private VendingMachineInterface $machine;
     private $itemCode;
     private $allowed;
 
-    public function __construct(VendingMachine $machine, $itemCode, $allowed = true)
+    public function __construct(VendingMachineInterface $machine, $itemCode, $allowed = true)
     {
         $this->machine = $machine;
         $this->itemCode = $itemCode;
@@ -31,19 +31,19 @@ class SelectItemCommand implements Command
         }
 
         if (!$this->machine->codeExists($this->itemCode)) {
-            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_CODE_NOT_SET, true);
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_CODE_NOT_SET, true);
             return $result;
         }
         if (!$this->machine->hasStock($this->itemCode)) {
-            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_OUT_OF_STOCK, true);
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_OUT_OF_STOCK, true);
             return $result;
         }
         if (!$this->machine->hasFundsForItem($this->itemCode)) {
-            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, true);
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_INSUFFICIENT_FUNDS, true);
             return $result;
         }
         if (!$this->machine->hasChange($this->itemCode)) {
-            $this->machine->state->setMessage(VendingMachine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE, true);
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_NOT_ENOUGH_CHANGE, true);
             return $result;
         }
 
@@ -62,11 +62,11 @@ class SelectItemCommand implements Command
             $this->machine->inventory->removeCoins($changeCoins);
             $this->machine->userMoneyManager->reset();
 
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->machine->inventory->items[$this->itemCode]['count'] = $originalItemCount;
             $this->machine->inventory->coins = $originalInventoryCoins;
             $this->machine->userMoneyManager->insertedCoins = $originalUserCoins;
-            $this->machine->displayMessage = VendingMachine::ERROR_MESSAGE_SELECT_ITEM;
+            $this->machine->displayMessage = $this->machine::ERROR_MESSAGE_SELECT_ITEM;
             return $result;
         }
 

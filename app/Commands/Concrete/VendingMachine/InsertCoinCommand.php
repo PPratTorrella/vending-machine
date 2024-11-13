@@ -3,15 +3,15 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\VendingMachine;
+use App\Models\Interfaces\VendingMachineInterface;
 use Illuminate\Support\Facades\Config;
 
 class InsertCoinCommand implements Command
 {
-    private VendingMachine $machine;
+    private VendingMachineInterface $machine;
     private int $coin;
 
-    public function __construct(VendingMachine $machine, $coin)
+    public function __construct(VendingMachineInterface $machine, $coin)
     {
         $this->machine = $machine;
         $this->coin = $coin;

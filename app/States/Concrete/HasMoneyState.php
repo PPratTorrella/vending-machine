@@ -8,9 +8,9 @@ use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
 use App\Presenters\VendingMachinePresenter;
-use App\States\Interfaces\VendingMachineState;
+use App\States\Interfaces\VendingMachineStateInterface;
 
-class HasMoneyState implements VendingMachineState
+class HasMoneyState implements VendingMachineStateInterface
 {
     const DISPLAY_MESSAGE = 'Insert more coins or select an item.';
     const TOTAL_SUM_PREFIX = 'Total inserted: ';

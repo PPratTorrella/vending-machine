@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\VendingMachineInterface;
 use App\Services\Inventory;
 use App\Services\UserMoneyManager;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
-use App\States\Interfaces\VendingMachineState;
+use App\States\Interfaces\VendingMachineStateInterface;
+use Illuminate\Support\Facades\App;
 
-class VendingMachine
+class VendingMachine implements VendingMachineInterface
 {
     const ERROR_MESSAGE_SELECT_ITEM = 'ERROR occured. Transaction cancelled, try again.';
     const ERROR_MESSAGE_INSUFFICIENT_FUNDS = 'Insufficient funds. Please insert more coins.';
@@ -17,7 +19,7 @@ class VendingMachine
     const ERROR_MESSAGE_CODE_NOT_SET = 'Invalid code.';
     const ERROR_MESSAGE_INVALID_COIN = 'Invalid coin.';
 
-    public VendingMachineState $state;
+    public VendingMachineStateInterface $state;
     public Inventory $inventory;
     public UserMoneyManager $userMoneyManager;
     public string $displayMessage;
@@ -29,17 +31,17 @@ class VendingMachine
         $this->userMoneyManager = new UserMoneyManager();
     }
 
-    public function insertCoin($value): array
+    public function insertCoin($coin): array
     {
-        return $this->state->insertCoin($value);
+        return $this->state->insertCoin($coin);
     }
 
-    public function returnCoins()
+    public function returnCoins(): array
     {
         return $this->state->returnCoins();
     }
 
-    public function selectItem($itemCode)
+    public function selectItem($itemCode): array
     {
         return $this->state->selectItem($itemCode);
     }
@@ -49,19 +51,19 @@ class VendingMachine
         return $this->state->service($items, $coins);
     }
 
-    public function getInsertedCoins()
+    public function getInsertedCoins(): array
     {
         return $this->userMoneyManager->getInsertedCoins();
     }
 
-    public function getInsertedCoinsTotal()
+    public function getInsertedCoinsTotal(): int
     {
         return $this->userMoneyManager->getTotal();
     }
 
-    // @todo could make some class (DTO)
     public function getInventory(): array
     {
+        // @todo could make some class (DTO)
         return [
             'items' => $this->inventory->items,
             'coins' => $this->inventory->coins,
@@ -122,14 +124,14 @@ class VendingMachine
         $this->state = new IdleState($this); // @todo see what to do with these
     }
 
-    public function setState(VendingMachineState $state): void
-    {
-        $this->state = $state;
-    }
-
     public function setHasMoneyState(): void
     {
-        $this->state = new HasMoneyState($this);
+        $this->state = App::make(HasMoneyState::class, ['machine' => $this]);
+    }
+
+    public function setState(VendingMachineStateInterface $state): void
+    {
+        $this->state = $state;
     }
 
 }

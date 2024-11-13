@@ -2,7 +2,7 @@
 
 namespace App\States\Interfaces;
 
-interface VendingMachineState
+interface VendingMachineStateInterface
 {
     public function insertCoin($coin): array;
 

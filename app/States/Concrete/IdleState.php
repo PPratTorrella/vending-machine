@@ -7,9 +7,9 @@ use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Commands\Concrete\VendingMachine\ServiceCommand;
 use App\Factories\VendingMachineStateFactory;
 use App\Models\VendingMachine;
-use App\States\Interfaces\VendingMachineState;
+use App\States\Interfaces\VendingMachineStateInterface;
 
-class IdleState implements VendingMachineState
+class IdleState implements VendingMachineStateInterface
 {
     const DISPLAY_MESSAGE = 'Please insert coins.';
     const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';

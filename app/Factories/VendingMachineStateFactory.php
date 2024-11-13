@@ -5,7 +5,7 @@ namespace App\Factories;
 use App\Models\VendingMachine;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
-use App\States\Interfaces\VendingMachineState;
+use App\States\Interfaces\VendingMachineStateInterface;
 use Exception;
 use Illuminate\Support\Facades\App;
 
@@ -24,10 +24,10 @@ class VendingMachineStateFactory
      *
      * @param string $stateName
      * @param VendingMachine $vendingMachine
-     * @return VendingMachineState
+     * @return VendingMachineStateInterface
      * @throws Exception
      */
-    public static function create(string $stateName, VendingMachine $vendingMachine): VendingMachineState
+    public static function create(string $stateName, VendingMachine $vendingMachine): VendingMachineStateInterface
     {
         $stateClass = self::$stateMap[$stateName] ?? null;
 
@@ -37,8 +37,8 @@ class VendingMachineStateFactory
 
         $state = App::make($stateClass, ['machine' => $vendingMachine]);
 
-        if (!$state instanceof VendingMachineState) {
-            throw new Exception("{$stateClass} is not a valid VendingMachineState.");
+        if (!$state instanceof VendingMachineStateInterface) {
+            throw new Exception("$stateClass does not implement VendingMachineStateInterface.");
         }
 
         return $state;
