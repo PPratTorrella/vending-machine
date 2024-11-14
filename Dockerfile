@@ -1,5 +1,8 @@
 FROM php:8.2-fpm
 
+# Switch to root to run apt-get
+USER root
+
 # Install git
 RUN apt-get update && apt-get install -y git && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
