@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Models\Interfaces;
-
-use App\Services\Inventory;
+namespace App\Engine\Interfaces;
 
 interface VendingMachineInterface
 {
@@ -21,4 +19,8 @@ interface VendingMachineInterface
     public function getInsertedCoinsTotal(): int;
 
     public function getInventory(): array;
+
+    public function punch();
+
+    public function getStateName();
 }

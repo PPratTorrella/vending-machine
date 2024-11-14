@@ -3,7 +3,7 @@
 namespace App\Engine;
 
 use App\Factories\VendingMachineStateFactory;
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 use App\Services\Inventory;
 use App\Services\UserMoneyManager;
 use App\States\Interfaces\VendingMachineStateInterface;
@@ -48,6 +48,11 @@ class VendingMachine implements VendingMachineInterface
     public function service($items = [], $coins = []): bool
     {
         return $this->state->service($items, $coins);
+    }
+
+    public function punch(): void
+    {
+        $this->state->punch();
     }
 
     public function getInsertedCoins(): array
@@ -128,8 +133,18 @@ class VendingMachine implements VendingMachineInterface
         $this->state = $this->stateFactory->create(VendingMachineStateFactory::HAS_MONEY_STATE_NAME, $this);
     }
 
+    public function setBrokenState(): void
+    {
+        $this->state = $this->stateFactory->create(VendingMachineStateFactory::BROKEN_STATE_NAME, $this);
+    }
+
     public function setState(VendingMachineStateInterface $state): void
     {
         $this->state = $state;
+    }
+
+    public function getStateName()
+    {
+        return $this->state->getName();
     }
 }

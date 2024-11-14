@@ -3,6 +3,7 @@
 namespace App\Factories;
 
 use App\Engine\VendingMachine;
+use App\States\Concrete\BrokenState;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineStateInterface;
@@ -13,10 +14,12 @@ class VendingMachineStateFactory
 {
     const IDLE_STATE_NAME = 'idleState';
     const HAS_MONEY_STATE_NAME = 'hasMoneyState';
+    const BROKEN_STATE_NAME = 'brokenState';
 
     protected static array $stateMap = [
         self::IDLE_STATE_NAME => IdleState::class,
         self::HAS_MONEY_STATE_NAME => HasMoneyState::class,
+        self::BROKEN_STATE_NAME => BrokenState::class,
     ];
 
     /**

@@ -3,21 +3,22 @@
 namespace App\States\Concrete;
 
 use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
-use App\Commands\Concrete\VendingMachine\PunchCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Commands\Concrete\VendingMachine\ServiceCommand;
 use App\Factories\VendingMachineStateFactory;
 use App\Engine\VendingMachine;
 use App\States\Interfaces\VendingMachineStateInterface;
 
-class IdleState implements VendingMachineStateInterface
+class BrokenState implements VendingMachineStateInterface
 {
-    const DISPLAY_MESSAGE = 'Please insert coins.';
-    const SELECTED_ITEM_MESSAGE = 'Please insert coins before selecting an item.';
-    const RETURN_COINS_MESSAGE = 'No coins to return.';
-    const INSERTED_COIN_NOT_VALID = 'Returned invalid coin.';
-    const SERVICE_MESSAGE = 'Fresh stock.';
-    const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
+    const DISPLAY_MESSAGE = 'Broken machine. Do not insert coins!! Need service.';
+    const SELECTED_ITEM_MESSAGE = 'You can\'t buy anything machine is very broken...';
+    const RETURN_COINS_MESSAGE = 'Hmmm no, cant do that, way too broken.';
+    const INSERTED_COIN_NOT_VALID = 'invalid coin.';
+    const SERVICE_MESSAGE = 'Fresh stock and fixed machine! :).';
+    const INSERTED_COIN = 'Coin inserted? You trust that this broken machine wont keep it?';
+    const STATE_NAME = VendingMachineStateFactory::BROKEN_STATE_NAME;
+    const PUNCH_MESSAGE = 'Who punches a broken machine?';
 
     private VendingMachine $machine;
 
@@ -32,16 +33,15 @@ class IdleState implements VendingMachineStateInterface
         $command = new InsertCoinCommand($this->machine, $coin);
         $result = $command->execute();
         if (empty($result)) {
-            $this->machine->setHasMoneyState();
+            $this->setMessage(self::INSERTED_COIN);
         } else {
-            $this->setMessage(self::INSERTED_COIN_NOT_VALID, true);
+            $this->setMessage(self::INSERTED_COIN_NOT_VALID);
         }
         return $result;
     }
 
     public function returnCoins(): array
     {
-        // for extra safety could still call command, but in this project we'll trust states and idle should have no coins
         $this->setMessage(self::RETURN_COINS_MESSAGE);
         return [];
     }
@@ -58,15 +58,14 @@ class IdleState implements VendingMachineStateInterface
     {
         $command = new ServiceCommand($this->machine, $items, $coins);
         $command->execute();
-        $this->setMessage(self::SERVICE_MESSAGE, true);
+        $this->machine->setIdleState();
+        $this->setMessage(self::SERVICE_MESSAGE);
         return true;
     }
 
     public function punch(): void
     {
-        $command = new PunchCommand($this->machine);
-        $command->execute();
-        $this->machine->setBrokenState();
+        $this->setMessage(self::PUNCH_MESSAGE, true);
     }
 
     public function getName(): string
@@ -77,7 +76,7 @@ class IdleState implements VendingMachineStateInterface
     public function setMessage($message = null, $prefixDefault = false): void
     {
         if ($prefixDefault) {
-            $message = self::DISPLAY_MESSAGE . ' ' .$message;
+            $message = self::DISPLAY_MESSAGE . ' '. $message;
         }
         $this->machine->setDisplayMessage($message);
     }

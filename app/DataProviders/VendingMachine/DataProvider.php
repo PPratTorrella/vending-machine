@@ -2,7 +2,7 @@
 
 namespace App\DataProviders\VendingMachine;
 
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use Illuminate\Support\Facades\Log;
 use Exception;

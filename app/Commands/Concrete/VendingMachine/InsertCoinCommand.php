@@ -3,7 +3,7 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 use Illuminate\Support\Facades\Config;
 
 class InsertCoinCommand implements Command

@@ -3,7 +3,7 @@
 namespace App\Commands\Concrete\VendingMachine;
 
 use App\Commands\Interfaces\Command;
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 use Exception;
 
 class SelectItemCommand implements Command
@@ -31,7 +31,7 @@ class SelectItemCommand implements Command
         }
 
         if (!$this->machine->codeExists($this->itemCode)) {
-            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_CODE_NOT_SET, true);
+            $this->machine->state->setMessage($this->machine::ERROR_MESSAGE_CODE_NOT_SET, true); //@todo add error code to return and let state handle messages
             return $result;
         }
         if (!$this->machine->hasStock($this->itemCode)) {

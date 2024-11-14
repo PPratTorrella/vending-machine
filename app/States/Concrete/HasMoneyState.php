@@ -16,6 +16,7 @@ class HasMoneyState implements VendingMachineStateInterface
     const TOTAL_SUM_PREFIX = 'Total inserted: ';
     const SERVICE_MESSAGE = 'Service not allowed. Please wait for current transaction to finish.';
     const INSERTED_COIN_NOT_VALID = 'Returned invalid last coin.';
+    const PUNCH_MESSAGE = 'You just broke the machine.';
     const STATE_NAME = VendingMachineStateFactory::HAS_MONEY_STATE_NAME;
 
     private VendingMachine $machine;
@@ -61,6 +62,12 @@ class HasMoneyState implements VendingMachineStateInterface
         return false;
     }
 
+    public function punch(): void
+    {
+        $this->machine->setBrokenState();
+        $this->machine->setDisplayMessage(self::PUNCH_MESSAGE);
+    }
+
     public function getName(): string
     {
         return self::STATE_NAME;
@@ -74,7 +81,7 @@ class HasMoneyState implements VendingMachineStateInterface
         if ($prefixDefault) {
             $total = $this->machine->getInsertedCoinsTotal();
             $totalFormatted = $this->presenter->formatPrice($total);
-            $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . $message;
+            $message = self::TOTAL_SUM_PREFIX . $totalFormatted . '€. ' . ' ' . $message;
         }
         $this->machine->setDisplayMessage($message);
     }

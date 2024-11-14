@@ -116,4 +116,10 @@ class VendingMachineController extends Controller
         }
         return redirect()->route('vendingMachine.show');
     }
+
+    public function punch()
+    {
+        $this->vendingMachineService->punch();
+        return redirect()->route('vendingMachine.show');
+    }
 }

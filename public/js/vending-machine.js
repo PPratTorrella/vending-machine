@@ -20,9 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     productCodes.forEach(function (codeElement) {
         codeElement.addEventListener('click', function () {
-            const code = codeElement.textContent.trim();
-            itemCodeInput.value = code;
+            itemCodeInput.value = codeElement.textContent.trim();
             itemCodeInput.focus(); // Optional: focuses the input field
         });
     });
 });
+
+function punchMachine() {
+    window.location = punchRouteUrl;
+}

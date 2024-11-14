@@ -2,7 +2,7 @@
 
 namespace App\Repositories\VendingMachine\Interfaces;
 
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 
 interface StorageInterface
 {

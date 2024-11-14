@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\DataProviders\VendingMachine\DataProvider;
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 
 class VendingMachineService
 {
@@ -13,7 +13,6 @@ class VendingMachineService
     public function __construct(DataProvider $dataProvider)
     {
         $this->dataProvider = $dataProvider;
-        $this->refreshVendingMachine();
     }
 
     public function refreshVendingMachine(): void
@@ -35,6 +34,7 @@ class VendingMachineService
             'displayMessage' => $this->vendingMachine->getDisplayMessage(),
             'insertedCoins' => $this->vendingMachine->getInsertedCoins(),
             'totalInserted' => $this->vendingMachine->getInsertedCoinsTotal(),
+            'stateName' => $this->vendingMachine->getStateName(),
         ];
     }
 
@@ -68,5 +68,12 @@ class VendingMachineService
         $result = $this->vendingMachine->returnCoins();
         $this->dataProvider->saveVendingMachine($this->vendingMachine);
         return $result;
+    }
+
+    public function punch(): void
+    {
+        $this->refreshVendingMachine();
+        $this->vendingMachine->punch();
+        $this->dataProvider->saveVendingMachine($this->vendingMachine);
     }
 }

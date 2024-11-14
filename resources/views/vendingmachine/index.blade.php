@@ -13,6 +13,7 @@
 <body>
 <div class="vending-machine">
     <h1 class="text-center">Vending Machine</h1>
+    <h5 class="text-center">{{ $stateName }}</h5>
     <div class="machine-display">
         <h3 class="digital">{{ $displayMessage }}</h3>
     </div>
@@ -25,13 +26,12 @@
         </div>
     @endif
 
+    <button onclick="document.getElementById('success-sound').play(); punchMachine()" class="btn btn-link" id="play-sound-btn">
+        <i class="fas fa-fist-raised"></i> Punch machine
+    </button>
+
     <?php /** @var VendingMachinePresenter $presenter */ ?>
     @if ($presenter && ($presenter->getItem() || count($presenter->getCoins())))
-        @if (($presenter->getItem()))
-            <button onclick="document.getElementById('success-sound').play()" class="btn btn-link" id="play-sound-btn">
-                <i class="fas fa-fist-raised"></i> Bumb machine if stuck
-            </button>
-        @endif
         <div class="alert alert-success">
             @if (($presenter->getItem()))
                 <h4>Item Dispensed:</h4>
@@ -136,6 +136,9 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="{{ asset('js/vending-machine.js') }}"></script>
+<script>
+    const punchRouteUrl = "{{ route('vendingMachine.punch') }}";
+</script>
 
 </body>
 </html>

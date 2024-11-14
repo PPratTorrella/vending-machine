@@ -5,7 +5,7 @@ namespace App\Commands\Concrete\VendingMachine;
 use App\Commands\Interfaces\Command;
 use App\Engine\Interfaces\VendingMachineInterface;
 
-class ReturnCoinsCommand implements Command
+class PunchCommand implements Command
 {
     private VendingMachineInterface $machine;
 
@@ -14,9 +14,8 @@ class ReturnCoinsCommand implements Command
         $this->machine = $machine;
     }
 
-    public function execute(): array
+    public function execute(): void
     {
-        return $this->machine->userMoneyManager->returnCoins();
+        // we could delete some coins or items for example
     }
-
 }

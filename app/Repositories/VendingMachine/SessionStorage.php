@@ -2,7 +2,7 @@
 namespace App\Repositories\VendingMachine;
 
 use App\Factories\VendingMachineStateFactory;
-use App\Models\Interfaces\VendingMachineInterface;
+use App\Engine\Interfaces\VendingMachineInterface;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use Exception;
 use Illuminate\Contracts\Session\Session;
