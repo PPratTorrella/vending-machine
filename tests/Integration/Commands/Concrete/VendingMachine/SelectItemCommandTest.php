@@ -4,7 +4,7 @@ namespace Tests\Integration\Commands\Concrete\VendingMachine;
 
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Services\VendingMachineService;
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use App\States\Concrete\HasMoneyState;
 use Illuminate\Support\Facades\App;
 use Tests\TestCase;

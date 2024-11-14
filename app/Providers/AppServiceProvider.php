@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Factories\VendingMachineStateFactory;
 use App\Helpers\ChangeCalculatorHelper;
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use App\Presenters\VendingMachinePresenter;
 use App\Repositories\VendingMachine\Interfaces\StorageInterface;
 use App\Repositories\VendingMachine\SessionStorage;

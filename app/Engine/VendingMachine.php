@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Engine;
 
 use App\Factories\VendingMachineStateFactory;
 use App\Models\Interfaces\VendingMachineInterface;

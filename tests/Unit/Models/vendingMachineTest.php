@@ -5,7 +5,7 @@ namespace Models;
 use App\Factories\VendingMachineStateFactory;
 use App\Helpers\ChangeCalculatorHelper;
 use App\Models\Item;
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use App\Services\Inventory;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;

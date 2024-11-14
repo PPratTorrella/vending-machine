@@ -3,7 +3,7 @@
 namespace Tests\Integration\Commands\Concrete\VendingMachine;
 
 use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use Tests\TestCase;
 
 class InsertCoinCommandTest extends TestCase

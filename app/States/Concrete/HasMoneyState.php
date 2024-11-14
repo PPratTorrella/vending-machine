@@ -6,7 +6,7 @@ use App\Commands\Concrete\VendingMachine\InsertCoinCommand;
 use App\Commands\Concrete\VendingMachine\ReturnCoinsCommand;
 use App\Commands\Concrete\VendingMachine\SelectItemCommand;
 use App\Factories\VendingMachineStateFactory;
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use App\Presenters\VendingMachinePresenter;
 use App\States\Interfaces\VendingMachineStateInterface;
 

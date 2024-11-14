@@ -2,7 +2,7 @@
 
 namespace App\Factories;
 
-use App\Models\VendingMachine;
+use App\Engine\VendingMachine;
 use App\States\Concrete\HasMoneyState;
 use App\States\Concrete\IdleState;
 use App\States\Interfaces\VendingMachineStateInterface;
