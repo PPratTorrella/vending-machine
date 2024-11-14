@@ -26,9 +26,11 @@
         </div>
     @endif
 
-    <button onclick="document.getElementById('success-sound').play(); punchMachine()" class="btn btn-link" id="play-sound-btn">
-        <i class="fas fa-fist-raised"></i> Punch machine
-    </button>
+    <div class="punch-button">
+        <button onclick="document.getElementById('success-sound').play(); punchMachine()" class="btn btn-danger" id="play-sound-btn">
+            <i class="fas fa-fist-raised"></i> Punch machine
+        </button>
+    </div>
 
     <?php /** @var VendingMachinePresenter $presenter */ ?>
     @if ($presenter && ($presenter->getItem() || count($presenter->getCoins())))

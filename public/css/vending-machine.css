@@ -63,3 +63,7 @@ body {
 .product-code:hover {
     background-color: #28a745;
 }
+
+.punch-button {
+   margin-bottom: 20px;
+}
