@@ -16,6 +16,7 @@ class IdleState implements VendingMachineStateInterface
     const RETURN_COINS_MESSAGE = 'No coins to return.';
     const INSERTED_COIN_NOT_VALID = 'Returned invalid coin.';
     const STATE_NAME = VendingMachineStateFactory::IDLE_STATE_NAME;
+    const SERVICE_MESSAGE = 'Fresh stock.';
 
     private VendingMachine $machine;
 
@@ -56,6 +57,7 @@ class IdleState implements VendingMachineStateInterface
     {
         $command = new ServiceCommand($this->machine, $items, $coins);
         $command->execute();
+        $this->setMessage(self::SERVICE_MESSAGE, true);
         return true;
     }
 
