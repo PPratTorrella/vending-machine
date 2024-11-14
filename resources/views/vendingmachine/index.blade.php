@@ -7,77 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
-
-    <style>
-        .vending-machine {
-            max-width: 1000px;
-            margin: 50px auto;
-        }
-
-        .machine-display {
-            background-color: #000;
-            color: #0F0; /* Digital green color */
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border-radius: 5px;
-            border: 2px solid #0F0;
-        }
-
-        .machine-display .digital {
-            margin: 0;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.5em;
-        }
-
-        .product-icon {
-            font-size: 30px;
-        }
-
-        .coin-icon {
-            font-size: 24px;
-            color: gold;
-        }
-
-        .product-card {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .product-card .card-body {
-            padding: 10px;
-        }
-
-        .product-code {
-            background-color: #eee;
-            padding: 5px;
-            border-radius: 3px;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-
-        .small-alert {
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            margin: 10px auto;
-            max-width: 300px;
-            border-radius: 3px;
-        }
-
-        .product-code {
-            background-color: #eee;
-            padding: 5px;
-            border-radius: 3px;
-            display: inline-block;
-            margin-bottom: 5px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .product-code:hover {
-            background-color: #28a745;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/vending-machine.css') }}">
 </head>
 
 <body>
@@ -205,37 +135,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const resultAlert = document.getElementById('result-alert');
-        const successSound = document.getElementById('success-sound');
-
-        if (resultAlert) {
-            successSound.play();
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const resultAlert = document.getElementById('result-alert');
-        const successSound = document.getElementById('success-sound');
-
-        if (resultAlert) {
-            successSound.play();
-        }
-
-        const productCodes = document.querySelectorAll('.product-code');
-        const itemCodeInput = document.getElementById('item_code');
-
-        productCodes.forEach(function (codeElement) {
-            codeElement.addEventListener('click', function () {
-                const code = codeElement.textContent.trim();
-                itemCodeInput.value = code;
-                itemCodeInput.focus(); // Optional: focuses the input field
-            });
-        });
-    });
-</script>
+<script src="{{ asset('js/vending-machine.js') }}"></script>
 
 </body>
 </html>
